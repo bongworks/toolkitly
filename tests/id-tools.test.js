@@ -6,7 +6,8 @@ import {
   generateUuidV7,
   generateUlid,
   validateIdentifier,
-  generateIdentifiers
+  generateIdentifiers,
+  identifierCopy
 } from '../assets/js/id-tools.js';
 
 test('generateUuidV4 creates a valid RFC 4122 version 4 identifier', () => {
@@ -42,4 +43,9 @@ test('generateIdentifiers creates bounded batches for every supported kind', () 
   assert.equal(generateIdentifiers('uuid-v4', 0).ok, false);
   assert.equal(generateIdentifiers('uuid-v7', 1001).ok, false);
   assert.equal(generateIdentifiers('unsupported', 1).ok, false);
+});
+
+test('identifierCopy provides localized page feedback', () => {
+  assert.equal(identifierCopy('en', 'copied'), 'Copied to clipboard.');
+  assert.equal(identifierCopy('ko', 'generated', { count: 2 }), '2개의 식별자를 브라우저에서 생성했습니다.');
 });

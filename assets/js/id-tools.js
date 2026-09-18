@@ -4,6 +4,20 @@ const ULID_ALPHABET = '0123456789ABCDEFGHJKMNPQRSTVWXYZ';
 const UUID_V4 = /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
 const UUID_V7 = /^[0-9a-f]{8}-[0-9a-f]{4}-7[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
 const ULID = /^[0-7][0-9A-HJKMNP-TV-Z]{25}$/;
+const COPY = {
+  en: {
+    generated: '{count} identifiers generated locally.', copied: 'Copied to clipboard.', copyFailed: 'Copy failed. Select the result and copy it manually.',
+    valid: 'Valid {type}.', invalid: 'Enter a valid UUID v4, UUID v7, or ULID.'
+  },
+  ko: {
+    generated: '{count}개의 식별자를 브라우저에서 생성했습니다.', copied: '클립보드에 복사했습니다.', copyFailed: '복사하지 못했습니다. 결과를 직접 선택해 복사하세요.',
+    valid: '유효한 {type}입니다.', invalid: 'UUID v4, UUID v7 또는 ULID 형식을 입력하세요.'
+  }
+};
+
+export function identifierCopy(language, key, replacements = {}) {
+  return (COPY[language === 'ko' ? 'ko' : 'en'][key] ?? COPY.en[key] ?? key).replace(/\{(\w+)\}/g, (_, name) => replacements[name] ?? `{${name}}`);
+}
 
 function randomBytes(length) {
   const bytes = new Uint8Array(length);
@@ -87,18 +101,27 @@ function initializeIdentifierPage() {
   const validation = document.querySelector('#identifier-validation');
   if (!kind || !count || !generate || !output || !status || !copy || !download || !validateInput || !validate || !validation) return;
   const language = () => document.documentElement.lang === 'ko' ? 'ko' : 'en';
-  const local = (en, ko) => language() === 'ko' ? ko : en;
+  function translateLabels() {
+    const current = language();
+    for (const element of document.querySelectorAll('[data-en][data-ko]')) {
+      const text = element.dataset[current];
+      if (element.querySelector('select, input, textarea') && element.firstChild?.nodeType === 3) element.firstChild.nodeValue = text;
+      else element.textContent = text;
+    }
+  }
+  translateLabels();
+  document.querySelector('[data-page-language]')?.addEventListener('click', () => setTimeout(translateLabels, 0));
 
   generate.addEventListener('click', () => {
     const result = generateIdentifiers(kind.value, Number(count.value));
     if (!result.ok) return setStatus(status, { language: getLanguage(), type: 'error', text: result.message });
     output.textContent = result.value.join('\n');
-    setStatus(status, { language: getLanguage(), type: 'success', text: local(`${result.value.length} identifiers generated locally.`, `${result.value.length}개의 식별자를 브라우저에서 생성했습니다.`) });
+    setStatus(status, { language: getLanguage(), type: 'success', text: identifierCopy(language(), 'generated', { count: result.value.length }) });
   });
   copy.addEventListener('click', async () => {
     if (!output.textContent) return;
-    try { await navigator.clipboard.writeText(output.textContent); setStatus(status, { language: getLanguage(), type: 'success', text: local('Copied to clipboard.', '클립보드에 복사했습니다.') }); }
-    catch { setStatus(status, { language: getLanguage(), type: 'error', text: local('Copy failed. Select the result and copy it manually.', '복사하지 못했습니다. 결과를 직접 선택해 복사하세요.') }); }
+    try { await navigator.clipboard.writeText(output.textContent); setStatus(status, { language: getLanguage(), type: 'success', text: identifierCopy(language(), 'copied') }); }
+    catch { setStatus(status, { language: getLanguage(), type: 'error', text: identifierCopy(language(), 'copyFailed') }); }
   });
   download.addEventListener('click', () => {
     if (!output.textContent) return;
@@ -109,7 +132,7 @@ function initializeIdentifierPage() {
   validate.addEventListener('click', () => {
     const result = validateIdentifier(validateInput.value);
     validation.dataset.status = result.ok ? 'success' : 'error';
-    validation.textContent = result.ok ? local(`Valid ${result.value.type}.`, `유효한 ${result.value.type}입니다.`) : local(result.message, 'UUID v4, UUID v7 또는 ULID 형식을 입력하세요.');
+    validation.textContent = result.ok ? identifierCopy(language(), 'valid', { type: result.value.type }) : identifierCopy(language(), 'invalid');
   });
 }
 
