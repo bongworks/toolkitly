@@ -61,11 +61,6 @@ jobs:
           printf 'ADSENSE_CLIENT_ID=%s\n' "$ADSENSE_CLIENT_ID" >> .env
           printf 'GOOGLE_CONSENT_REQUIRED=%s\n' "$GOOGLE_CONSENT_REQUIRED" >> .env
 
-      - name: Validate deployment configuration
-        run: |
-          [[ -n "$DEPLOY_ROOT" ]] || { echo 'TOOLKITLY_DEPLOY_ROOT GitHub Variable is required.' >&2; exit 1; }
-          [[ "$DEPLOY_ROOT" = /* ]] || { echo 'TOOLKITLY_DEPLOY_ROOT must be an absolute path.' >&2; exit 1; }
-
       - name: Run unit quality gates
         run: npm test
 

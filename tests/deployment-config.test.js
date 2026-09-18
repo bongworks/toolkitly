@@ -16,6 +16,7 @@ test('deployment workflow builds the static release from GitHub Variables on por
   assert.match(workflow, /DEPLOY_ROOT: \$\{\{ vars\.TOOLKITLY_DEPLOY_ROOT \}\}/);
   assert.match(workflow, /SERVICE_PORT: '34561'/);
   assert.match(workflow, /printf 'PUBLIC_SITE_URL=%s\\n' "\$PUBLIC_SITE_URL"/);
+  assert.doesNotMatch(workflow, /TOOLKITLY_DEPLOY_ROOT GitHub Variable is required/);
   assert.match(workflow, /npm test/);
   assert.match(workflow, /npm run build/);
   assert.match(workflow, /deploy\/deploy-on-runner\.sh "\$GITHUB_WORKSPACE\/dist"/);
@@ -28,6 +29,8 @@ test('deployment script atomically switches releases and restores the previous o
   ]);
 
   assert.match(script, /service_port="\$\{SERVICE_PORT:-34561\}"/);
+  assert.match(script, /deploy_root="\$\{DEPLOY_ROOT:-\$HOME\/toolkitly\}"/);
+  assert.doesNotMatch(script, /\[\[ -n "\$deploy_root"/);
   assert.match(script, /launchd_label="\$\{LAUNCHD_LABEL:-com\.bongworks\.toolkitly\}"/);
   assert.match(script, /os\.replace\(sys\.argv\[1\], sys\.argv\[2\]\)/);
   assert.match(script, /http:\/\/127\.0\.0\.1:\$\{service_port\}\//);
