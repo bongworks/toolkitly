@@ -3,6 +3,8 @@ import assert from 'node:assert/strict';
 
 import {
   diffJson,
+  diffText,
+  compareDiffSources,
   jsonToCsv,
   csvToJson,
   jsonToYaml,
@@ -10,6 +12,52 @@ import {
   base64Encode,
   base64Decode
 } from '../assets/js/data-tools.js';
+
+test('diffText ignores whitespace, blank lines, and case when requested', () => {
+  const result = diffText('  Hello   Toolkitly  \n\nSecond line', 'hellotoolkitly\nsecondline', {
+    ignoreWhitespace: true,
+    ignoreBlankLines: true,
+    ignoreCase: true
+  });
+
+  assert.deepEqual(result, { ok: true, value: { changes: [], comparedLines: 2 } });
+});
+
+test('diffText reports changed, added, and removed lines with one-based line numbers', () => {
+  assert.deepEqual(diffText('first\nold\nremoved', 'first\nnew\nadded'), {
+    ok: true,
+    value: {
+      comparedLines: 3,
+      changes: [
+        { line: 2, type: 'changed', before: 'old', after: 'new' },
+        { line: 3, type: 'changed', before: 'removed', after: 'added' }
+      ]
+    }
+  });
+  assert.deepEqual(diffText('first', 'first\nadded'), {
+    ok: true,
+    value: { comparedLines: 2, changes: [{ line: 2, type: 'added', after: 'added' }] }
+  });
+  assert.deepEqual(diffText('first\nremoved', 'first'), {
+    ok: true,
+    value: { comparedLines: 2, changes: [{ line: 2, type: 'removed', before: 'removed' }] }
+  });
+});
+
+test('compareDiffSources reports forced JSON errors and falls back to text in automatic mode', () => {
+  const invalidJson = compareDiffSources('{not json}', '{}', 'json');
+  assert.equal(invalidJson.ok, false);
+  assert.match(invalidJson.message, /^Invalid JSON:/);
+
+  assert.deepEqual(compareDiffSources('{not json}', '{}', 'auto'), {
+    ok: true,
+    value: {
+      kind: 'text',
+      changes: [{ line: 1, type: 'changed', before: '{not json}', after: '{}' }],
+      comparedLines: 1
+    }
+  });
+});
 
 test('diffJson reports nested additions, removals, and changes', () => {
   const result = diffJson('{"user":{"name":"Ada","active":true}}', '{"user":{"name":"Grace","role":"admin"}}');

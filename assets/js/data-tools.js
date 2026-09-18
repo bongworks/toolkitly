@@ -39,6 +39,49 @@ export function diffJson(beforeSource, afterSource) {
   return { ok: true, value: changes };
 }
 
+function normalizeTextLine(line, options) {
+  let normalized = line;
+  if (options.ignoreWhitespace) normalized = normalized.replace(/\s+/g, '');
+  if (options.ignoreCase) normalized = normalized.toLocaleLowerCase();
+  return normalized;
+}
+
+function prepareTextLines(source, options) {
+  return source.split(/\r?\n/)
+    .map((text, index) => ({ text, normalized: normalizeTextLine(text, options), line: index + 1 }))
+    .filter((item) => !options.ignoreBlankLines || item.normalized.trim() !== '');
+}
+
+export function diffText(beforeSource, afterSource, options = {}) {
+  const beforeLines = prepareTextLines(String(beforeSource), options);
+  const afterLines = prepareTextLines(String(afterSource), options);
+  const comparedLines = Math.max(beforeLines.length, afterLines.length);
+  const changes = [];
+
+  for (let index = 0; index < comparedLines; index += 1) {
+    const before = beforeLines[index];
+    const after = afterLines[index];
+    if (!before) changes.push({ line: after.line, type: 'added', after: after.text });
+    else if (!after) changes.push({ line: before.line, type: 'removed', before: before.text });
+    else if (before.normalized !== after.normalized) {
+      changes.push({ line: Math.max(before.line, after.line), type: 'changed', before: before.text, after: after.text });
+    }
+  }
+
+  return { ok: true, value: { changes, comparedLines } };
+}
+
+export function compareDiffSources(beforeSource, afterSource, mode = 'auto', options = {}) {
+  if (!['auto', 'json', 'text'].includes(mode)) return { ok: false, message: 'Choose a valid comparison mode.' };
+  if (mode === 'text') return { ok: true, value: { kind: 'text', ...diffText(beforeSource, afterSource, options).value } };
+
+  const jsonResult = diffJson(beforeSource, afterSource);
+  if (jsonResult.ok) return { ok: true, value: { kind: 'json', changes: jsonResult.value } };
+  if (mode === 'json') return jsonResult;
+
+  return { ok: true, value: { kind: 'text', ...diffText(beforeSource, afterSource, options).value } };
+}
+
 function csvEscape(value) {
   const text = typeof value === 'string' ? value : JSON.stringify(value);
   return /[",\r\n]/.test(text) ? `"${text.replaceAll('"', '""')}"` : text;
@@ -210,7 +253,56 @@ if (typeof document !== 'undefined') {
     document.querySelector(config.copy)?.addEventListener('click', () => copyResult(output, status));
     document.querySelector(config.clear)?.addEventListener('click', () => { input.value = ''; if (config.second) document.querySelector(config.second).value = ''; output.textContent = ''; status.textContent = copy('Input cleared.', '입력값을 지웠습니다.'); });
   }
-  wire({ input: '#json-before', second: '#json-after', output: '#diff-output', status: '#diff-status', run: '#run-diff', copy: '#copy-diff', clear: '#clear-diff', transform: diffJson, render: (value) => value.length ? value.map((item) => `${item.type.toUpperCase()} ${item.path}: ${JSON.stringify(item.after ?? item.before)}`).join('\n') : copy('No differences.', '차이가 없습니다.') });
+  const diffBefore = document.querySelector('#json-before');
+  const diffAfter = document.querySelector('#json-after');
+  const diffOutput = document.querySelector('#diff-output');
+  const diffStatus = document.querySelector('#diff-status');
+  const diffPanel = diffOutput?.parentElement;
+  const formatDiff = (value) => {
+    if (!value.changes.length) return copy('No differences.', '차이가 없습니다.');
+    if (value.kind === 'json') return value.changes.map((item) => `${item.type.toUpperCase()} ${item.path}: ${JSON.stringify(item.after ?? item.before)}`).join('\n');
+    return value.changes.map((item) => {
+      const values = item.type === 'changed' ? `${JSON.stringify(item.before)} → ${JSON.stringify(item.after)}` : JSON.stringify(item.after ?? item.before);
+      return `${item.type.toUpperCase()} line ${item.line}: ${values}`;
+    }).join('\n');
+  };
+  document.querySelector('#run-diff')?.addEventListener('click', () => {
+    if (!diffBefore || !diffAfter || !diffOutput || !diffStatus || !diffPanel) return;
+    const mode = document.querySelector('#diff-mode')?.value ?? 'auto';
+    const options = {
+      ignoreWhitespace: document.querySelector('#diff-ignore-whitespace')?.checked,
+      ignoreBlankLines: document.querySelector('#diff-ignore-blank-lines')?.checked,
+      ignoreCase: document.querySelector('#diff-ignore-case')?.checked
+    };
+    const result = compareDiffSources(diffBefore.value, diffAfter.value, mode, options);
+    if (!result.ok) {
+      diffOutput.textContent = '';
+      diffStatus.textContent = result.message;
+      diffPanel.dataset.state = 'error';
+      return;
+    }
+    diffOutput.textContent = formatDiff(result.value);
+    const changeCount = result.value.changes.length;
+    const modeName = result.value.kind === 'json' ? copy('JSON structure', 'JSON 구조') : copy('text lines', '텍스트 줄');
+    const countMessage = currentLanguage() === 'ko'
+      ? result.value.kind === 'json'
+        ? `${modeName}를 비교했습니다. 변경 ${changeCount}개.`
+        : `${modeName} ${result.value.comparedLines}줄을 비교했습니다. 변경 ${changeCount}개.`
+      : result.value.kind === 'json'
+        ? `Compared ${modeName}; ${changeCount} change${changeCount === 1 ? '' : 's'}.`
+        : `Compared ${result.value.comparedLines} ${modeName}; ${changeCount} change${changeCount === 1 ? '' : 's'}.`;
+    diffStatus.textContent = countMessage;
+    diffPanel.dataset.state = 'success';
+  });
+  document.querySelector('#copy-diff')?.addEventListener('click', () => { if (diffOutput && diffStatus) copyResult(diffOutput, diffStatus); });
+  document.querySelector('#clear-diff')?.addEventListener('click', () => {
+    if (!diffBefore || !diffAfter || !diffOutput || !diffStatus || !diffPanel) return;
+    diffBefore.value = '';
+    diffAfter.value = '';
+    diffOutput.textContent = '';
+    diffStatus.textContent = copy('Inputs cleared.', '입력값을 지웠습니다.');
+    diffPanel.dataset.state = 'idle';
+  });
   const converterTable = document.querySelector('#converter-preview');
   const downloadButton = document.querySelector('#download-convert');
   let downloadValue = '';
