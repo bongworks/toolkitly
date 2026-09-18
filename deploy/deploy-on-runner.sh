@@ -60,7 +60,7 @@ restore_previous_release() {
 }
 
 source_directory="${1:-${GITHUB_WORKSPACE:-}/dist}"
-deploy_root="${DEPLOY_ROOT:-}"
+deploy_root="${DEPLOY_ROOT:-$HOME/toolkitly}"
 release_name="${RELEASE_NAME:-manual-$(date +%Y%m%d%H%M%S)}"
 service_port="${SERVICE_PORT:-34561}"
 service_host="${SERVICE_HOST:-0.0.0.0}"
@@ -71,7 +71,7 @@ script_directory="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"
 template_path="$script_directory/com.bongworks.toolkitly.plist.template"
 
 [[ -d "$source_directory" && -f "$source_directory/index.html" ]] || die "static build output is missing: $source_directory"
-[[ -n "$deploy_root" && "$deploy_root" = /* ]] || die 'DEPLOY_ROOT must be an absolute path'
+[[ "$deploy_root" = /* ]] || die 'DEPLOY_ROOT must be an absolute path'
 [[ "$release_name" =~ ^[A-Za-z0-9._-]+$ ]] || die "unsafe release name: $release_name"
 [[ "$service_port" =~ ^[1-9][0-9]{0,4}$ ]] && (( service_port <= 65535 )) || die "invalid service port: $service_port"
 [[ "$service_host" =~ ^[A-Za-z0-9.:-]+$ ]] || die "invalid service host: $service_host"

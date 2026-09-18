@@ -54,7 +54,7 @@ Push a `release-X.Y.Z` tag or run **Build and deploy** manually to deploy throug
 
 Configure these repository-level GitHub Actions Variables before the first run:
 
-- `TOOLKITLY_DEPLOY_ROOT` — required absolute path where releases, logs, and the `current` link are kept.
+- `TOOLKITLY_DEPLOY_ROOT` — optional absolute path where releases, logs, and the `current` link are kept. If unset, the runner uses `$HOME/toolkitly`.
 - `PUBLIC_SITE_URL`, `GA4_MEASUREMENT_ID`, `ADSENSE_CLIENT_ID`, and `GOOGLE_CONSENT_REQUIRED` — copied to the build-only `.env`; their behavior is described above.
 
 Do not store secrets in these variables. The build validates and emits only the intentionally public Google integration IDs into the browser artifact.
