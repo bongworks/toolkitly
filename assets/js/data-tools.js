@@ -98,6 +98,8 @@ export function csvToJson(source) {
 }
 
 function yamlScalar(value) {
+  if (value === '{}') return {};
+  if (value === '[]') return [];
   if (value === 'null' || value === '~') return null;
   if (value === 'true') return true;
   if (value === 'false') return false;
@@ -120,6 +122,7 @@ export function jsonToYaml(source) {
     const pad = ' '.repeat(indent);
     if (value === null || typeof value !== 'object') return yamlString(value);
     const entries = Array.isArray(value) ? value.map((item) => [null, item]) : Object.entries(value);
+    if (!entries.length) return Array.isArray(value) ? '[]' : '{}';
     return entries.map(([key, item]) => {
       const prefix = Array.isArray(value) ? `${pad}-` : `${pad}${key}:`;
       if (item && typeof item === 'object') return `${prefix}\n${render(item, indent + 2)}`;
@@ -133,6 +136,7 @@ export function jsonToYaml(source) {
 export function yamlToJson(source) {
   const lines = source.split(/\r?\n/).filter((line) => line.trim() && !line.trimStart().startsWith('#'));
   if (!lines.length) return { ok: false, message: 'YAML input is empty.' };
+  if (lines.length === 1 && !lines[0].includes(':') && !lines[0].trimStart().startsWith('-')) return { ok: true, value: yamlScalar(lines[0].trim()) };
   if (lines.some((line) => { const leading = line.match(/^ */)[0].length; return leading % 2 !== 0; })) return { ok: false, message: 'Unsupported YAML indentation. Use two spaces.' };
   function parseBlock(start, indent) {
     const isList = lines[start].startsWith(' '.repeat(indent) + '-');
@@ -202,11 +206,27 @@ if (typeof document !== 'undefined') {
   function wire(config) {
     const input = document.querySelector(config.input); const output = document.querySelector(config.output); const status = document.querySelector(config.status);
     if (!input || !output || !status) return;
-    document.querySelector(config.run)?.addEventListener('click', () => { const result = config.transform(input.value, document.querySelector(config.second)?.value); output.textContent = result.ok ? config.render(result.value) : ''; status.textContent = result.ok ? copy('Done. Result is ready.', '완료했습니다. 결과를 확인하세요.') : result.message; output.parentElement.dataset.state = result.ok ? 'success' : 'error'; });
+    document.querySelector(config.run)?.addEventListener('click', () => { const result = config.transform(input.value, document.querySelector(config.second)?.value); output.textContent = result.ok ? config.render(result.value) : ''; status.textContent = result.ok ? copy('Done. Result is ready.', '완료했습니다. 결과를 확인하세요.') : result.message; output.parentElement.dataset.state = result.ok ? 'success' : 'error'; config.afterRender?.(result); });
     document.querySelector(config.copy)?.addEventListener('click', () => copyResult(output, status));
     document.querySelector(config.clear)?.addEventListener('click', () => { input.value = ''; if (config.second) document.querySelector(config.second).value = ''; output.textContent = ''; status.textContent = copy('Input cleared.', '입력값을 지웠습니다.'); });
   }
   wire({ input: '#json-before', second: '#json-after', output: '#diff-output', status: '#diff-status', run: '#run-diff', copy: '#copy-diff', clear: '#clear-diff', transform: diffJson, render: (value) => value.length ? value.map((item) => `${item.type.toUpperCase()} ${item.path}: ${JSON.stringify(item.after ?? item.before)}`).join('\n') : copy('No differences.', '차이가 없습니다.') });
-  wire({ input: '#converter-input', output: '#converter-output', status: '#converter-status', run: '#run-convert', copy: '#copy-convert', clear: '#clear-convert', transform: (value) => { const mode = document.querySelector('#converter-mode')?.value; if (mode === 'json-csv') return jsonToCsv(value); if (mode === 'csv-json') return csvToJson(value); if (mode === 'json-yaml') return jsonToYaml(value); return yamlToJson(value); }, render: (value) => typeof value === 'string' ? value : JSON.stringify(value, null, 2) });
+  const converterTable = document.querySelector('#converter-preview');
+  const downloadButton = document.querySelector('#download-convert');
+  let downloadValue = '';
+  let downloadMime = 'text/plain;charset=utf-8';
+  function renderTable(rows) {
+    converterTable.replaceChildren();
+    if (!Array.isArray(rows) || !rows.length || rows.some((row) => !row || typeof row !== 'object' || Array.isArray(row))) { converterTable.hidden = true; return; }
+    const headers = [...new Set(rows.flatMap((row) => Object.keys(row)))];
+    const head = document.createElement('thead'); const headRow = document.createElement('tr');
+    for (const header of headers) { const cell = document.createElement('th'); cell.textContent = header; headRow.append(cell); }
+    head.append(headRow); const body = document.createElement('tbody');
+    for (const row of rows) { const tableRow = document.createElement('tr'); for (const header of headers) { const cell = document.createElement('td'); const value = row[header]; cell.textContent = value === undefined ? '' : typeof value === 'string' ? value : JSON.stringify(value); tableRow.append(cell); } body.append(tableRow); }
+    converterTable.append(head, body); converterTable.hidden = false;
+  }
+  wire({ input: '#converter-input', output: '#converter-output', status: '#converter-status', run: '#run-convert', copy: '#copy-convert', clear: '#clear-convert', transform: (value) => { const mode = document.querySelector('#converter-mode')?.value; if (mode === 'json-csv') return jsonToCsv(value); if (mode === 'csv-json') return csvToJson(value); if (mode === 'json-yaml') return jsonToYaml(value); return yamlToJson(value); }, render: (value) => typeof value === 'string' ? value : JSON.stringify(value, null, 2), afterRender: (result) => { const mode = document.querySelector('#converter-mode')?.value; if (!result.ok) { renderTable([]); downloadButton.disabled = true; downloadValue = ''; return; } downloadValue = typeof result.value === 'string' ? result.value : JSON.stringify(result.value, null, 2); downloadMime = mode === 'json-csv' ? 'text/csv;charset=utf-8' : 'text/plain;charset=utf-8'; downloadButton.disabled = false; let rows = result.value; if (mode === 'json-csv') { const parsed = csvToJson(result.value); rows = parsed.ok ? parsed.value : []; } renderTable(rows); } });
+  downloadButton?.addEventListener('click', () => { if (!downloadValue) return; const link = document.createElement('a'); link.href = URL.createObjectURL(new Blob([downloadValue], { type: downloadMime })); link.download = `toolkitly-converted.${downloadMime.startsWith('text/csv') ? 'csv' : 'txt'}`; link.click(); URL.revokeObjectURL(link.href); });
+  document.querySelector('#clear-convert')?.addEventListener('click', () => { converterTable?.replaceChildren(); if (converterTable) converterTable.hidden = true; downloadValue = ''; if (downloadButton) downloadButton.disabled = true; });
   wire({ input: '#base64-input', output: '#base64-output', status: '#base64-status', run: '#run-base64', copy: '#copy-base64', clear: '#clear-base64', transform: (value) => document.querySelector('#base64-mode')?.value === 'decode' ? base64Decode(value) : base64Encode(value), render: (value) => value });
 }

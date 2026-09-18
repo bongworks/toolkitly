@@ -49,6 +49,14 @@ test('jsonToYaml and yamlToJson round trip simple mappings and lists', () => {
   });
 });
 
+test('jsonToYaml and yamlToJson round trip top-level scalars and empty containers', () => {
+  for (const value of ['hello', 42, true, null, {}, []]) {
+    const yaml = jsonToYaml(JSON.stringify(value));
+    assert.equal(yaml.ok, true);
+    assert.deepEqual(yamlToJson(yaml.value), { ok: true, value });
+  }
+});
+
 test('base64 handles Unicode text in both directions', () => {
   const encoded = base64Encode('Toolkitly 도구 🚀');
   assert.deepEqual(encoded, { ok: true, value: 'VG9vbGtpdGx5IOuPhOq1rCDwn5qA' });
