@@ -43,6 +43,15 @@ export async function hashBytes(input, algorithm = 'SHA-256', expectedDigest) {
   } catch (error) { return { ok: false, message: error instanceof Error ? error.message : 'Hashing failed.' }; }
 }
 
+export async function readLocalFileBytes(file) {
+  try {
+    if (!file || typeof file.arrayBuffer !== 'function') throw new Error('No readable local file selected.');
+    return { ok: true, value: new Uint8Array(await file.arrayBuffer()) };
+  } catch {
+    return { ok: false, message: 'Could not read the selected local file.' };
+  }
+}
+
 if (typeof document !== 'undefined') {
   initializeToolPage();
   const byId = (id) => document.getElementById(id);
@@ -54,7 +63,9 @@ if (typeof document !== 'undefined') {
   new MutationObserver(updateLabels).observe(document.documentElement, { attributes: true, attributeFilter: ['lang'] });
   byId('hash-run')?.addEventListener('click', async () => {
     const file = byId('hash-file').files[0];
-    const input = file ? new Uint8Array(await file.arrayBuffer()) : byId('hash-input').value;
+    const fileBytes = file ? await readLocalFileBytes(file) : null;
+    if (fileBytes && !fileBytes.ok) return setStatus(fileBytes.message, true);
+    const input = fileBytes ? fileBytes.value : byId('hash-input').value;
     const result = await hashBytes(input, byId('hash-algorithm').value, byId('expected-digest').value);
     if (!result.ok) return setStatus(result.message, true);
     const encodings = digestEncodings(result.value.bytes);

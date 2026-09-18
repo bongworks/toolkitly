@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 
-import { hashBytes, digestEncodings } from '../assets/js/hash-tools.js';
+import { hashBytes, digestEncodings, readLocalFileBytes } from '../assets/js/hash-tools.js';
 
 test('hashBytes returns the known SHA-256 digest for UTF-8 text', async () => {
   const result = await hashBytes('abc', 'SHA-256');
@@ -28,4 +28,9 @@ test('hashBytes compares an optional expected digest in either supported encodin
 test('hashBytes rejects an unsupported digest algorithm', async () => {
   const result = await hashBytes('abc', 'MD5');
   assert.deepEqual(result, { ok: false, message: 'Only SHA-256, SHA-384, and SHA-512 are supported.' });
+});
+
+test('readLocalFileBytes reports a local File API failure without throwing', async () => {
+  const result = await readLocalFileBytes({ arrayBuffer: async () => { throw new Error('File read denied'); } });
+  assert.deepEqual(result, { ok: false, message: 'Could not read the selected local file.' });
 });

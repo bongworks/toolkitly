@@ -19,8 +19,20 @@ test('AES-GCM round trips UTF-8 text using generated 256-bit material', async ()
   assert.equal(material.ok, true);
   const encrypted = await aesEncrypt({ plaintext: 'Toolkitly 암호화 🚀', ...material.value });
   assert.equal(encrypted.ok, true);
-  const decrypted = await aesDecrypt({ ciphertext: encrypted.value.ciphertext, ...material.value });
+  const decrypted = await aesDecrypt({ ciphertext: encrypted.value.ciphertext, key: material.value.key, iv: encrypted.value.iv });
   assert.deepEqual(decrypted, { ok: true, value: 'Toolkitly 암호화 🚀' });
+});
+
+test('AES-GCM encryption replaces a supplied IV with a fresh IV for each ciphertext', async () => {
+  const material = await generateAesMaterial();
+  const first = await aesEncrypt({ plaintext: 'first', ...material.value });
+  const second = await aesEncrypt({ plaintext: 'second', ...material.value });
+  assert.equal(first.ok, true);
+  assert.equal(second.ok, true);
+  assert.notEqual(first.value.iv, material.value.iv);
+  assert.notEqual(second.value.iv, material.value.iv);
+  assert.notEqual(first.value.iv, second.value.iv);
+  assert.deepEqual(await aesDecrypt({ ciphertext: first.value.ciphertext, key: material.value.key, iv: first.value.iv }), { ok: true, value: 'first' });
 });
 
 test('AES-GCM rejects material that is not a 256-bit key and 12-byte IV', async () => {

@@ -77,9 +77,11 @@ export async function aesEncrypt({ plaintext, key, iv } = {}) {
     const material = aesMaterial({ key, iv });
     if (!material.ok) return material;
     const api = cryptoApi();
+    const freshIv = new Uint8Array(12);
+    api.getRandomValues(freshIv);
     const cryptoKey = await api.subtle.importKey('raw', asArrayBuffer(material.value.key), { name: 'AES-GCM', length: 256 }, false, ['encrypt']);
-    const encrypted = await api.subtle.encrypt({ name: 'AES-GCM', iv: material.value.iv, tagLength: 128 }, cryptoKey, encoder.encode(plaintext));
-    return { ok: true, value: { ciphertext: bytesToBase64(new Uint8Array(encrypted)) } };
+    const encrypted = await api.subtle.encrypt({ name: 'AES-GCM', iv: freshIv, tagLength: 128 }, cryptoKey, encoder.encode(plaintext));
+    return { ok: true, value: { ciphertext: bytesToBase64(new Uint8Array(encrypted)), iv: bytesToBase64(freshIv) } };
   } catch (error) { return failure(error); }
 }
 
@@ -154,6 +156,7 @@ if (typeof document !== 'undefined') {
         : mode === 'rsa-encrypt' ? await rsaEncrypt(plaintext, byId('rsa-public-key').value)
           : await rsaDecrypt(plaintext, byId('rsa-private-key').value);
     if (!result.ok) return setStatus(result.message, true);
+    if (mode === 'aes-encrypt') byId('aes-iv').value = result.value.iv;
     setOutput(typeof result.value === 'string' ? result.value : result.value.ciphertext);
     setStatus(message('Complete. The value never left this browser.', '완료했습니다. 값은 이 브라우저 밖으로 전송되지 않았습니다.'));
   });
