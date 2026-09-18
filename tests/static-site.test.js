@@ -23,3 +23,12 @@ test('sitemap contains the public home and JSON formatter paths', async () => {
   assert.match(sitemap, /https:\/\/example\.com\//);
   assert.match(sitemap, /https:\/\/example\.com\/tools\/json-formatter\.html/);
 });
+
+test('P1 pages are represented in the sitemap and use only local scripts', async () => {
+  const p1Pages = ['json-diff.html', 'jwt-inspector.html', 'regex-tester.html', 'crypto-lab.html', 'hash-generator.html', 'uuid-ulid-generator.html'];
+  const sitemap = await readFile('sitemap.xml', 'utf8');
+  const pages = await Promise.all(p1Pages.map((page) => readFile(`tools/${page}`, 'utf8')));
+
+  for (const page of p1Pages) assert.match(sitemap, new RegExp(`https://example\\.com/tools/${page.replace('.', '\\.')}`));
+  for (const page of pages) assert.doesNotMatch(page, /<script[^>]+src=["']https?:\/\//i);
+});

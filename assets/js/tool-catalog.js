@@ -29,8 +29,8 @@ export const TOOLS = [
   },
   {
     id: 'json-diff', href: 'tools/json-diff.html', category: 'data', icon: '≠',
-    name: { en: 'JSON Diff', ko: 'JSON 비교기' },
-    description: { en: 'Compare JSON values and find meaningful changes.', ko: '두 JSON 값의 의미 있는 차이를 찾습니다.' }, available: true
+    name: { en: 'Diff Checker', ko: 'Diff 검사기' },
+    description: { en: 'Compare JSON structures or text lines and find meaningful changes.', ko: 'JSON 구조 또는 텍스트 줄을 비교해 의미 있는 차이를 찾습니다.' }, available: true
   },
   {
     id: 'json-converter', href: 'tools/json-converter.html', category: 'data', icon: '⇄',
@@ -66,5 +66,30 @@ export const TOOLS = [
     id: 'color-converter', href: 'tools/color-converter.html', category: 'design', icon: '◈',
     name: { en: 'Color Converter', ko: '색상 변환기' },
     description: { en: 'Convert between HEX, RGB, and HSL values.', ko: 'HEX, RGB, HSL 색상 값을 변환합니다.' }, available: true
+  },
+  {
+    id: 'jwt-inspector', href: 'tools/jwt-inspector.html', category: 'data', icon: '◈',
+    name: { en: 'JWT Inspector', ko: 'JWT 검사기' },
+    description: { en: 'Decode JWT claims and verify supported signatures with your local key.', ko: 'JWT 클레임을 디코딩하고 로컬 키로 지원되는 서명을 검증합니다.' }, available: true
+  },
+  {
+    id: 'regex-tester', href: 'tools/regex-tester.html', category: 'data', icon: '.*',
+    name: { en: 'Regex Tester', ko: '정규식 테스터' },
+    description: { en: 'Test JavaScript patterns, captures, and match locations locally.', ko: 'JavaScript 패턴, 캡처 그룹, 일치 위치를 브라우저에서 확인합니다.' }, available: true
+  },
+  {
+    id: 'crypto-lab', href: 'tools/crypto-lab.html', category: 'data', icon: '⌁',
+    name: { en: 'Crypto Lab', ko: '암호화 실험실' },
+    description: { en: 'Encrypt and decrypt AES-GCM or RSA-OAEP values locally.', ko: 'AES-GCM 또는 RSA-OAEP 값을 브라우저에서 암복호화합니다.' }, available: true
+  },
+  {
+    id: 'hash-generator', href: 'tools/hash-generator.html', category: 'data', icon: '#',
+    name: { en: 'Hash Generator', ko: '해시 생성기' },
+    description: { en: 'Create SHA-256, SHA-384, or SHA-512 integrity digests locally.', ko: 'SHA-256, SHA-384, SHA-512 무결성 다이제스트를 브라우저에서 생성합니다.' }, available: true
+  },
+  {
+    id: 'uuid-ulid-generator', href: 'tools/uuid-ulid-generator.html', category: 'data', icon: 'ID',
+    name: { en: 'UUID / ULID Generator', ko: 'UUID / ULID 생성기' },
+    description: { en: 'Generate, validate, copy, and download browser-local identifiers.', ko: '브라우저 안에서 식별자를 생성·검증·복사·다운로드합니다.' }, available: true
   }
 ];

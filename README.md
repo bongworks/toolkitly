@@ -1,6 +1,8 @@
 # Toolkitly
 
-Static, browser-local utilities for links, data, time, and design work. The initial build includes a bilingual English/Korean dashboard and 12 working P0 tools: UTM Builder, URL Parser, URL Encoder/Decoder, JSON Formatter, JSON Diff, JSON/CSV/YAML Converter, Base64 Encoder/Decoder, Timestamp Converter, Timezone Planner, QR Code Generator, Contrast Checker, and Color Converter.
+Static, browser-local utilities for links, data, time, and design work. The bilingual English/Korean dashboard includes 12 P0 tools: UTM Builder, URL Parser, URL Encoder/Decoder, JSON Formatter, Diff Checker, JSON/CSV/YAML Converter, Base64 Encoder/Decoder, Timestamp Converter, Timezone Planner, QR Code Generator, Contrast Checker, and Color Converter.
+
+P1 adds JWT Inspector (including local signature verification with a user-provided secret or public key), Regex Tester, Crypto Lab (AES-GCM and RSA-OAEP), Hash Generator, and UUID / ULID Generator. All tool inputs remain local to the browser.
 
 ## Local preview
 

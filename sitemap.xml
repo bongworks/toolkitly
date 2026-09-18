@@ -17,6 +17,11 @@
   <url><loc>https://example.com/tools/qr-generator.html</loc></url>
   <url><loc>https://example.com/tools/contrast-checker.html</loc></url>
   <url><loc>https://example.com/tools/color-converter.html</loc></url>
+  <url><loc>https://example.com/tools/jwt-inspector.html</loc></url>
+  <url><loc>https://example.com/tools/regex-tester.html</loc></url>
+  <url><loc>https://example.com/tools/crypto-lab.html</loc></url>
+  <url><loc>https://example.com/tools/hash-generator.html</loc></url>
+  <url><loc>https://example.com/tools/uuid-ulid-generator.html</loc></url>
   <url>
     <loc>https://example.com/privacy.html</loc>
   </url>
