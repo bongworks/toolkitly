@@ -55,6 +55,13 @@ test('diffText aligns unchanged lines after a middle insertion or removal', () =
   });
 });
 
+test('diffText rejects oversized comparisons before allocating a quadratic matrix', () => {
+  const oversized = Array.from({ length: 1001 }, (_, index) => `line-${index}`).join('\n');
+  const result = diffText(oversized, oversized, {});
+  assert.equal(result.ok, false);
+  assert.match(result.message, /too large/i);
+});
+
 test('compareDiffSources reports forced JSON errors and falls back to text in automatic mode', () => {
   const invalidJson = compareDiffSources('{not json}', '{}', 'json');
   assert.equal(invalidJson.ok, false);

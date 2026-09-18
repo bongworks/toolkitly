@@ -81,6 +81,17 @@ test('verifyJwtSignature rejects none and unsupported algorithms before key impo
   }
 });
 
+test('verifyJwtSignature rejects malformed algorithms and unimplemented critical headers', async () => {
+  const secret = 'browser-local-secret';
+  const payload = base64Url(JSON.stringify({ sub: 'ada' }));
+  for (const header of [{ alg: ['HS256'] }, { alg: 'HS256', crit: ['b64'] }]) {
+    const encodedHeader = base64Url(JSON.stringify(header));
+    const signature = createHmac('sha256', secret).update(`${encodedHeader}.${payload}`).digest('base64url');
+    const result = await verifyJwtSignature(`${encodedHeader}.${payload}.${signature}`, { type: 'secret', value: secret });
+    assert.equal(result.ok, false);
+  }
+});
+
 test('verifyJwtSignature rejects malformed compact tokens and incompatible key types', async () => {
   const malformed = await verifyJwtSignature('header.payload', { type: 'secret', value: 'browser-local-secret' });
   const incompatible = await verifyJwtSignature(signedHs256Token({ sub: 'ada' }), { type: 'publicKey', value: '-----BEGIN PUBLIC KEY-----\n-----END PUBLIC KEY-----' });

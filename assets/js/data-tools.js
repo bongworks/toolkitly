@@ -55,6 +55,9 @@ function prepareTextLines(source, options) {
 export function diffText(beforeSource, afterSource, options = {}) {
   const beforeLines = prepareTextLines(String(beforeSource), options);
   const afterLines = prepareTextLines(String(afterSource), options);
+  if (beforeLines.length * afterLines.length > 1_000_000) {
+    return { ok: false, message: 'Text comparison is too large. Compare fewer than 1,000,000 line pairs.' };
+  }
   const comparedLines = Math.max(beforeLines.length, afterLines.length);
   const lengths = Array.from({ length: beforeLines.length + 1 }, () => Array(afterLines.length + 1).fill(0));
   for (let beforeIndex = beforeLines.length - 1; beforeIndex >= 0; beforeIndex -= 1) {
@@ -99,13 +102,17 @@ export function diffText(beforeSource, afterSource, options = {}) {
 
 export function compareDiffSources(beforeSource, afterSource, mode = 'auto', options = {}) {
   if (!['auto', 'json', 'text'].includes(mode)) return { ok: false, message: 'Choose a valid comparison mode.' };
-  if (mode === 'text') return { ok: true, value: { kind: 'text', ...diffText(beforeSource, afterSource, options).value } };
+  if (mode === 'text') {
+    const textResult = diffText(beforeSource, afterSource, options);
+    return textResult.ok ? { ok: true, value: { kind: 'text', ...textResult.value } } : textResult;
+  }
 
   const jsonResult = diffJson(beforeSource, afterSource);
   if (jsonResult.ok) return { ok: true, value: { kind: 'json', changes: jsonResult.value } };
   if (mode === 'json') return jsonResult;
 
-  return { ok: true, value: { kind: 'text', ...diffText(beforeSource, afterSource, options).value } };
+  const textResult = diffText(beforeSource, afterSource, options);
+  return textResult.ok ? { ok: true, value: { kind: 'text', ...textResult.value } } : textResult;
 }
 
 function csvEscape(value) {

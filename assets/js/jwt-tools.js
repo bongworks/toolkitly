@@ -134,6 +134,9 @@ export async function verifyJwtSignature(token, keySource) {
     return failure(error.message);
   }
   const algorithm = parsed.header.alg;
+  if (typeof algorithm !== 'string') return failure('JWT header algorithm must be a string.');
+  if (Array.isArray(parsed.header.crit) && parsed.header.crit.length) return failure('JWT critical headers are not supported.', algorithm);
+  if (parsed.header.crit !== undefined && !Array.isArray(parsed.header.crit)) return failure('JWT critical headers are invalid.', algorithm);
   if (algorithm === 'none') return failure('JWT algorithm "none" is not allowed.', algorithm);
   if (!HMAC_ALGORITHMS[algorithm] && !RSA_ALGORITHMS[algorithm] && !ECDSA_ALGORITHMS[algorithm]) return failure(`JWT algorithm "${String(algorithm)}" is not supported.`, typeof algorithm === 'string' ? algorithm : null);
   if (!parsed.parts[2]) return failure('JWT signature segment is missing.', algorithm);
