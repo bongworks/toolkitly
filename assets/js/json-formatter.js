@@ -24,6 +24,28 @@ export function applyFormatterAction({ source, action, indent = 2 }) {
   return action === 'minify' ? minifyJson(source) : formatJson(source, indent);
 }
 
+export function getJsonTreeLines(source) {
+  const result = parseJson(source);
+  if (!result.ok) return result;
+  const lines = [];
+  function walk(value, label, depth) {
+    const indent = '  '.repeat(depth);
+    if (Array.isArray(value)) {
+      lines.push(`${indent}${label}: array(${value.length})`);
+      value.forEach((item, index) => walk(item, `[${index}]`, depth + 1));
+    } else if (value && typeof value === 'object') {
+      lines.push(`${indent}${label}: object`);
+      Object.entries(value).forEach(([key, item]) => walk(item, key, depth + 1));
+    } else {
+      lines.push(`${indent}${label}: ${JSON.stringify(value)}`);
+    }
+  }
+  if (Array.isArray(result.parsed)) result.parsed.forEach((item, index) => walk(item, `[${index}]`, 0));
+  else if (result.parsed && typeof result.parsed === 'object') Object.entries(result.parsed).forEach(([key, item]) => walk(item, key, 0));
+  else walk(result.parsed, 'value', 0);
+  return { ok: true, value: lines };
+}
+
 function resultMessage(language, result) {
   if (result.ok) return language === 'ko' ? '완료했습니다. 결과를 복사하거나 계속 수정하세요.' : 'Done. Copy the result or keep editing.';
   return language === 'ko' ? `오류: ${result.message}` : result.message;
@@ -43,6 +65,8 @@ function initializeFormatterPage() {
   const actions = document.querySelector('#formatter-actions');
   const copyButton = document.querySelector('#copy-result');
   const clearButton = document.querySelector('#clear-json');
+  const treeButton = document.querySelector('#show-tree');
+  const downloadButton = document.querySelector('#download-json');
 
   if (!source || !output || !status || !indent || !actions || !copyButton || !clearButton) return;
 
@@ -63,6 +87,21 @@ function initializeFormatterPage() {
     output.parentElement.dataset.state = 'idle';
     status.textContent = language() === 'ko' ? '입력값을 지웠습니다.' : 'Input cleared.';
     source.focus();
+  });
+
+  treeButton?.addEventListener('click', () => {
+    const result = getJsonTreeLines(source.value);
+    updateFormatterUi(result.ok ? { ok: true, value: result.value.join('\n') } : result, output, status, language());
+  });
+
+  downloadButton?.addEventListener('click', () => {
+    if (!output.textContent) return;
+    const blob = new Blob([output.textContent], { type: 'application/json;charset=utf-8' });
+    const link = document.createElement('a');
+    link.href = URL.createObjectURL(blob);
+    link.download = 'toolkitly-result.json';
+    link.click();
+    URL.revokeObjectURL(link.href);
   });
 
   copyButton.addEventListener('click', async () => {

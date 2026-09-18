@@ -42,6 +42,7 @@
         <div id="formatter-actions" class="button-group">
           <button class="button button-primary" type="button" data-action="format" data-i18n="formatterFormat">Format JSON</button>
           <button class="button" type="button" data-action="minify" data-i18n="formatterMinify">Minify</button>
+          <button class="button" id="show-tree" type="button" data-i18n="formatterTree">Tree view</button>
           <button class="button button-quiet" id="clear-json" type="button" data-i18n="formatterClear">Clear</button>
         </div>
       </section>
@@ -52,7 +53,7 @@
           <textarea id="json-source" spellcheck="false" autocapitalize="off" autocomplete="off" data-i18n-placeholder="formatterPlaceholder" placeholder='{"project":"Toolkitly","private":true}'></textarea>
         </div>
         <div class="editor-panel panel" data-state="idle">
-          <div class="panel-heading"><span data-i18n="formatterOutput">OUTPUT</span><button class="text-button" id="copy-result" type="button" data-i18n="formatterCopy">Copy result</button></div>
+          <div class="panel-heading"><span data-i18n="formatterOutput">OUTPUT</span><span><button class="text-button" id="copy-result" type="button" data-i18n="formatterCopy">Copy result</button><button class="text-button" id="download-json" type="button" data-i18n="formatterDownload">Download</button></span></div>
           <pre tabindex="0"><code id="json-output"></code></pre>
         </div>
       </section>

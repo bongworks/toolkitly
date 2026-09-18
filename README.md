@@ -16,7 +16,7 @@ Open `http://localhost:4173/index.html`.
 npm test
 ```
 
-The project has no runtime package dependencies. The interface loads Geist and JetBrains Mono from Google Fonts. Before a public launch, either document that provider in the privacy notice or self-host the font files.
+The project has no runtime package dependencies or remote font/script requests. It uses system UI and monospace font stacks so the full site can operate from static hosting without sending tool data to a third party.
 
 ## Deploy before publishing
 
