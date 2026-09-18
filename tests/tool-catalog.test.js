@@ -1,5 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
+import { access } from 'node:fs/promises';
 
 import { TOOLS } from '../assets/js/tool-catalog.js';
 
@@ -30,6 +31,12 @@ test('catalog includes the implemented JSON formatter at its public route', () =
     description: {
       en: 'Format, validate, and minify JSON locally.',
       ko: 'JSON을 브라우저에서 포맷·검증·압축합니다.'
-    }
+    },
+    available: true
   });
+});
+
+test('every P0 catalog record is available and has a static tool page', async () => {
+  assert.equal(TOOLS.every((tool) => tool.available), true);
+  await Promise.all(TOOLS.map((tool) => access(tool.href)));
 });

@@ -6,6 +6,17 @@
   <url>
     <loc>https://example.com/tools/json-formatter.html</loc>
   </url>
+  <url><loc>https://example.com/tools/utm-builder.html</loc></url>
+  <url><loc>https://example.com/tools/url-parser.html</loc></url>
+  <url><loc>https://example.com/tools/url-codec.html</loc></url>
+  <url><loc>https://example.com/tools/json-diff.html</loc></url>
+  <url><loc>https://example.com/tools/json-converter.html</loc></url>
+  <url><loc>https://example.com/tools/base64-codec.html</loc></url>
+  <url><loc>https://example.com/tools/timestamp-converter.html</loc></url>
+  <url><loc>https://example.com/tools/timezone-planner.html</loc></url>
+  <url><loc>https://example.com/tools/qr-generator.html</loc></url>
+  <url><loc>https://example.com/tools/contrast-checker.html</loc></url>
+  <url><loc>https://example.com/tools/color-converter.html</loc></url>
   <url>
     <loc>https://example.com/privacy.html</loc>
   </url>

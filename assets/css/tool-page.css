@@ -23,4 +23,6 @@
 .button-primary { border-color: var(--accent); background: var(--accent); color: #fff; }
 .button-primary:hover { border-color: var(--accent-strong); background: var(--accent-strong); }
 .text-button { border: 0; background: transparent; color: var(--accent-strong); font-size: 0.8rem; font-weight: 600; }
+.qr-result { display: grid; place-items: center; }
+.qr-result canvas { max-width: 100%; image-rendering: pixelated; }
 @media (max-width: 48rem) { .tool-split { grid-template-columns: 1fr; } .tool-panel textarea, .tool-panel pre, .tool-result { min-height: 15rem; } }

@@ -1,6 +1,6 @@
 # Toolkitly
 
-Static, browser-local utilities for links, data, time, and design work. The initial build includes a bilingual English/Korean dashboard and a JSON formatter.
+Static, browser-local utilities for links, data, time, and design work. The initial build includes a bilingual English/Korean dashboard and 12 working P0 tools: UTM Builder, URL Parser, URL Encoder/Decoder, JSON Formatter, JSON Diff, JSON/CSV/YAML Converter, Base64 Encoder/Decoder, Timestamp Converter, Timezone Planner, QR Code Generator, Contrast Checker, and Color Converter.
 
 ## Local preview
 
@@ -29,5 +29,5 @@ The project has no runtime package dependencies. The interface loads Geist and J
 ## Product constraints
 
 - Tool inputs stay in the browser by default.
-- No user account, database, or server API is required for the current tools.
+- No user account, database, or server API is required for the current tools. QR generation uses a locally vendored MIT-licensed encoder; see `assets/vendor/NOTICE-qrcode.txt`.
 - GitHub links, favorites, and manual ad placeholders are intentionally excluded from the UI.

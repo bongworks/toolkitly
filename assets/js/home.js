@@ -44,7 +44,7 @@ function renderFilters() {
 function renderTools() {
   const tools = matchingTools();
   toolGrid.replaceChildren(...tools.map((tool) => {
-    const isAvailable = tool.id === 'json-formatter';
+    const isAvailable = tool.available;
     const card = document.createElement(isAvailable ? 'a' : 'article');
     card.className = 'tool-card';
     if (isAvailable) card.href = tool.href;

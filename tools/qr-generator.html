@@ -1,0 +1,18 @@
+<!doctype html>
+<html lang="en" data-theme="dark">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="Generate a QR code from text or a URL in your browser." />
+    <title>QR Code Generator | Toolkitly</title>
+    <link rel="stylesheet" href="../assets/css/tokens.css" />
+    <link rel="stylesheet" href="../assets/css/components.css" />
+    <link rel="stylesheet" href="../assets/css/tool-page.css" />
+  </head>
+  <body>
+    <header class="site-header"><nav class="site-nav" aria-label="Main navigation"><a class="brand" href="../index.html"><span class="brand-mark">&lt;/&gt;</span><span>Toolkitly</span></a><p class="tool-breadcrumb"><a href="../index.html">Tools</a><span>/</span><span>QR Code Generator</span></p><div class="nav-actions"><button class="icon-button" data-page-language type="button">EN</button><button class="icon-button" data-page-theme type="button">◐</button></div></nav></header>
+    <main class="page-shell tool-page"><section class="tool-heading"><p class="eyebrow">LINKS &amp; MARKETING</p><h1>QR Code Generator</h1><p>Create a downloadable QR code from a link or text. Generation happens locally.</p></section><section class="tool-workbench"><div class="tool-control-bar"><label for="qr-size">PNG size<select id="qr-size"><option value="256">256 px</option><option value="512">512 px</option><option value="1024">1024 px</option></select></label><div class="button-group"><button class="button button-primary" id="qr-generate" type="button">Generate QR</button><button class="button" id="qr-download" type="button" disabled>Download PNG</button></div></div><div class="tool-split"><div class="tool-panel"><div class="tool-panel-heading"><label for="qr-input">INPUT</label></div><textarea id="qr-input" placeholder="https://example.com"></textarea></div><div class="tool-panel"><div class="tool-panel-heading"><span>QR CODE</span></div><div class="tool-result qr-result"><canvas id="qr-canvas" aria-label="Generated QR code"></canvas></div></div></div><p id="qr-status" class="tool-status" aria-live="polite">Enter a URL or text, then generate your QR code.</p></section></main>
+    <footer class="site-footer"><span>Toolkitly</span><span>·</span><a href="../privacy.html">Privacy</a></footer>
+    <script src="../assets/vendor/qrcode.min.js"></script><script type="module" src="../assets/js/qr-generator.js"></script>
+  </body>
+</html>
