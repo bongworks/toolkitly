@@ -12,32 +12,66 @@
     <header class="site-header">
       <nav class="site-nav" aria-label="Main navigation">
         <a class="brand" href="index.html" aria-label="Toolkitly home"><span class="brand-mark" aria-hidden="true">&lt;/&gt;</span><span>Toolkitly</span></a>
-        <p class="tool-breadcrumb"><a href="index.html">Tools</a><span aria-hidden="true">/</span><span>Privacy</span></p>
-        <div class="nav-actions"><button class="icon-button" id="privacy-theme" type="button" aria-label="Switch theme"><span aria-hidden="true">◐</span></button></div>
+        <p class="tool-breadcrumb"><a href="index.html" data-i18n="tools">Tools</a><span aria-hidden="true">/</span><span data-i18n="privacy">Privacy</span></p>
+        <div class="nav-actions"><button class="icon-button" id="privacy-language" type="button" aria-label="Switch language">EN</button><button class="icon-button" id="privacy-theme" type="button" aria-label="Switch theme"><span aria-hidden="true">◐</span></button></div>
       </nav>
     </header>
     <main class="page-shell policy-page">
-      <p class="eyebrow">PRIVACY</p>
-      <h1>Privacy by design</h1>
-      <p class="policy-lead">Toolkitly is designed to run its tools in your browser.</p>
+      <p class="eyebrow" data-i18n="privacyEyebrow">PRIVACY</p>
+      <h1 data-i18n="privacyTitle">Privacy Policy</h1>
+      <p class="policy-lead" data-i18n="privacyLead">How Bongworks handles information when you use Toolkitly.</p>
       <section class="policy-section">
-        <h2>Tool input</h2>
-        <p>JSON and other values entered into currently available tools are processed only in your browser. Toolkitly does not upload, store, or sell that input.</p>
-        <p>현재 제공되는 도구에 입력한 JSON과 기타 값은 브라우저 안에서만 처리됩니다. Toolkitly는 이 입력값을 업로드, 저장 또는 판매하지 않습니다.</p>
+        <h2 data-i18n="privacyOperatorTitle">Operator</h2>
+        <p data-i18n="privacyOperatorText">Toolkitly is operated by Bongworks, an individual operator.</p>
       </section>
       <section class="policy-section">
-        <h2>Future services</h2>
-        <p>Analytics, advertising, or third-party services may be added after launch. Before enabling them, this page will be updated with the data involved, the provider, and applicable consent choices.</p>
+        <h2 data-i18n="privacyInputTitle">Tool input</h2>
+        <p data-i18n="privacyInputText">JSON and other values entered into currently available tools are processed only in your browser. Toolkitly does not upload, store, or sell that input.</p>
       </section>
       <section class="policy-section">
-        <h2>Contact</h2>
-        <p>Publish a project contact address here before public launch.</p>
+        <h2 data-i18n="privacyAnalyticsTitle">Analytics</h2>
+        <p data-i18n="privacyAnalyticsText">We use Google Analytics 4 (GA4) to understand site traffic and improve the service. Depending on your settings and consent, GA4 may process pages viewed, interactions, device and browser information, approximate location, cookies, and online identifiers. User-level and event-level data is retained for 14 months.</p>
       </section>
+      <section class="policy-section">
+        <h2 data-i18n="privacyAdsTitle">Advertising and cookies</h2>
+        <p data-i18n="privacyAdsText">We use Google AdSense and may show personalized ads. Google and other third-party vendors may use cookies or online identifiers to serve ads based on visits to this and other websites.</p>
+      </section>
+      <section class="policy-section">
+        <h2 data-i18n="privacyGoogleTitle">Google and international processing</h2>
+        <p data-i18n="privacyGoogleText">GA4 and AdSense are provided by Google. Information handled by these services may be processed by Google and its affiliates outside your country.</p>
+        <p><a href="https://policies.google.com/technologies/partner-sites" target="_blank" rel="noopener" data-i18n="privacyGoogleLink">Read how Google uses information from partner sites.</a></p>
+      </section>
+      <section class="policy-section">
+        <h2 data-i18n="privacyChoicesTitle">Your choices</h2>
+        <p><span data-i18n="privacyChoicesText">Where required, a consent message lets you accept or manage analytics and advertising cookies. You can also manage personalized advertising through </span><a href="https://adssettings.google.com/" target="_blank" rel="noopener" data-i18n="privacyAdsSettings">Google Ads Settings</a><span data-i18n="privacyChoicesTail"> and change cookie settings in your browser.</span></p>
+      </section>
+      <section class="policy-section">
+        <h2 data-i18n="privacyContactTitle">Contact</h2>
+        <p><span data-i18n="privacyContactLead">For privacy questions, contact </span><a href="mailto:service.bongworks@gmail.com">service.bongworks@gmail.com</a>.</p>
+      </section>
+      <p class="policy-lead" data-i18n="privacyPolicyUpdate">Effective date: September 18, 2026. We will update this policy before changing our data practices.</p>
     </main>
-    <footer class="site-footer"><span>Toolkitly</span><span class="footer-separator" aria-hidden="true">·</span><a href="index.html">Tools</a></footer>
+    <footer class="site-footer"><span>Toolkitly</span><span class="footer-separator" aria-hidden="true">·</span><a href="index.html" data-i18n="tools">Tools</a></footer>
     <script type="module">
       import { initializeTheme, toggleTheme } from './assets/js/theme.js';
+      import { getCopy, getStoredLanguage, setLanguage, translateStaticContent } from './assets/js/i18n.js';
+
+      const languageButton = document.querySelector('#privacy-language');
+      let language = setLanguage(getStoredLanguage());
+
+      function renderLanguage() {
+        translateStaticContent(language);
+        languageButton.textContent = language.toUpperCase();
+        languageButton.setAttribute('aria-label', getCopy(language, 'languageLabel'));
+        document.title = `${getCopy(language, 'privacy')} | Toolkitly`;
+      }
+
       initializeTheme();
+      renderLanguage();
+      languageButton.addEventListener('click', () => {
+        language = setLanguage(language === 'en' ? 'ko' : 'en');
+        renderLanguage();
+      });
       document.querySelector('#privacy-theme').addEventListener('click', toggleTheme);
     </script>
   </body>
