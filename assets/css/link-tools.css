@@ -13,4 +13,9 @@
 .link-status[data-status='error'] { color: var(--error); }
 .link-status[data-status='success'] { color: var(--success); }
 .link-help { margin: var(--space-3) 0 0; color: var(--text-faint); font-size: 0.8rem; }
+.link-query-editor { display: grid; gap: var(--space-2); margin-top: var(--space-4); }
+.link-query-editor > .tool-panel-heading { margin: 0 calc(var(--space-4) * -1); padding: 0 var(--space-4); }
+.link-query-row { display: grid; grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr); align-items: center; gap: var(--space-2); }
+.link-query-row input { width: 100%; min-width: 0; padding: 0.55rem 0.65rem; border: 1px solid var(--border); border-radius: var(--radius-sm); background: var(--surface-raised); color: var(--text); }
+.link-query-row span { color: var(--text-faint); font-family: var(--font-mono); }
 @media (max-width: 40rem) { .link-fields { grid-template-columns: 1fr; } .link-field-wide { grid-column: auto; } }

@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { buildUtmUrl, parseUrl, encodeUrlComponent, decodeUrlComponent } from '../assets/js/link-tools.js';
+import { buildUtmUrl, parseUrl, recomposeUrl, encodeUrlComponent, decodeUrlComponent } from '../assets/js/link-tools.js';
 
 test('buildUtmUrl preserves existing query parameters and adds campaign values', () => {
   const result = buildUtmUrl('https://example.com/landing?ref=nav#pricing', {
@@ -28,6 +28,23 @@ test('parseUrl returns repeated query parameters as arrays', () => {
 
 test('parseUrl rejects invalid URLs', () => {
   const result = parseUrl('://bad');
+  assert.equal(result.ok, false);
+  assert.match(result.message, /valid URL/i);
+});
+
+test('recomposeUrl edits query rows while preserving path and hash', () => {
+  const result = recomposeUrl('https://example.com/path?keep=yes&old=remove#section', [
+    { key: 'keep', value: 'updated' },
+    { key: 'new key', value: 'hello world' },
+    { key: 'keep', value: 'again' }
+  ]);
+
+  assert.equal(result.ok, true);
+  assert.equal(result.value, 'https://example.com/path?keep=updated&new+key=hello+world&keep=again#section');
+});
+
+test('recomposeUrl rejects a malformed URL', () => {
+  const result = recomposeUrl('not a url', []);
   assert.equal(result.ok, false);
   assert.match(result.message, /valid URL/i);
 });
