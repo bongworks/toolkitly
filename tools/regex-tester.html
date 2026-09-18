@@ -1,0 +1,28 @@
+<!doctype html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Test JavaScript regular expressions locally in your browser.">
+  <title>Regex Tester | Toolkitly</title>
+  <link rel="stylesheet" href="../assets/css/tokens.css"><link rel="stylesheet" href="../assets/css/components.css"><link rel="stylesheet" href="../assets/css/tool-page.css"><link rel="stylesheet" href="../assets/css/regex-tools.css">
+</head>
+<body>
+  <a class="skip-link" href="#workbench">Skip to tool</a>
+  <header class="site-header"><nav class="site-nav"><a class="brand" href="../index.html"><span class="brand-mark" aria-hidden="true">&lt;/&gt;</span><span>Toolkitly</span></a><p class="tool-breadcrumb"><a href="../index.html">Tools</a><span>/</span><span data-en="Regex Tester" data-ko="정규식 테스터">Regex Tester</span></p><div class="nav-actions"><button class="icon-button" data-page-language type="button">EN</button><button class="icon-button" data-page-theme type="button" aria-label="Switch theme">◐</button></div></nav></header>
+  <main id="workbench" class="page-shell tool-page">
+    <section class="tool-heading"><p class="eyebrow" data-en="DATA & DEVELOPER" data-ko="데이터·개발">DATA &amp; DEVELOPER</p><h1 data-en="Regex Tester" data-ko="정규식 테스터">Regex Tester</h1><p data-en="Run JavaScript regular expressions and inspect match positions and capture groups." data-ko="JavaScript 정규식을 실행하고 일치 위치와 캡처 그룹을 확인합니다.">Run JavaScript regular expressions and inspect match positions and capture groups.</p></section>
+    <section class="tool-workbench">
+      <div class="regex-form"><label for="regex-pattern"><span data-en="PATTERN" data-ko="패턴">PATTERN</span><input id="regex-pattern" spellcheck="false" value="(\\w+)@(\\w+\\.\\w+)"></label><label for="regex-flags"><span data-en="FLAGS" data-ko="플래그">FLAGS</span><input id="regex-flags" spellcheck="false" value="g" maxlength="8" aria-describedby="regex-flag-help"></label><button class="button button-primary" id="regex-run" type="button" data-en="Run expression" data-ko="정규식 실행">Run expression</button></div>
+      <label class="sr-only" for="regex-source" data-en="TEST TEXT" data-ko="테스트 텍스트">TEST TEXT</label><textarea id="regex-source" class="regex-source" spellcheck="false">ada@example.com, grace@toolkitly.dev</textarea>
+      <p id="regex-flag-help" class="tool-status" data-en="Use JavaScript flags such as g, i, m, s, u, y, d, or v." data-ko="g, i, m, s, u, y, d, v 등 JavaScript 플래그를 사용하세요.">Use JavaScript flags such as g, i, m, s, u, y, d, or v.</p>
+      <section class="regex-results"><div class="regex-results-header"><span data-en="MATCHES" data-ko="일치 결과">MATCHES</span><span><span id="regex-count">0</span> <span data-en="matches" data-ko="개 일치">matches</span></span></div><div class="regex-results-scroll"><table><thead><tr><th data-en="#" data-ko="#">#</th><th data-en="MATCH" data-ko="일치 텍스트">MATCH</th><th data-en="RANGE" data-ko="범위">RANGE</th><th data-en="CAPTURE GROUPS" data-ko="캡처 그룹">CAPTURE GROUPS</th></tr></thead><tbody id="regex-output"></tbody></table></div></section>
+      <p id="regex-status" class="tool-status" aria-live="polite" data-en="Run an expression to see matches. Complex expressions can take time in the browser." data-ko="정규식을 실행해 일치 결과를 확인하세요. 복잡한 정규식은 브라우저에서 시간이 걸릴 수 있습니다.">Run an expression to see matches. Complex expressions can take time in the browser.</p>
+      <div class="regex-examples" aria-label="Regex examples"><button class="button" type="button" data-regex-example data-regex-pattern="\\b\\d{4}-\\d{2}-\\d{2}\\b" data-regex-flags="g" data-regex-source="Published 2026-09-18; updated 2026-10-01." data-en="Try date example" data-ko="날짜 예시 실행">Try date example</button><button class="button" type="button" data-regex-example data-regex-pattern="(https?):\\/\\/([^\\s]+)" data-regex-flags="g" data-regex-source="Visit https://toolkitly.example or http://localhost:4173." data-en="Try URL example" data-ko="URL 예시 실행">Try URL example</button></div>
+      <section class="regex-cheatsheet" aria-label="Regular expression cheat sheet"><p><code>\d \w \s</code><br><span data-en="digit, word, whitespace" data-ko="숫자, 단어 문자, 공백">digit, word, whitespace</span></p><p><code>^ $ . * + ?</code><br><span data-en="anchors and quantifiers" data-ko="앵커와 수량자">anchors and quantifiers</span></p><p><code>(...) [abc] |</code><br><span data-en="groups, character sets, alternatives" data-ko="그룹, 문자 집합, 대안">groups, character sets, alternatives</span></p></section>
+    </section>
+    <section class="tool-note"><span aria-hidden="true">⌁</span><p><strong data-en="Private by default." data-ko="기본값은 비공개입니다.">Private by default.</strong> <span data-en="Patterns and test text are processed only in this browser." data-ko="패턴과 테스트 텍스트는 이 브라우저 안에서만 처리됩니다.">Patterns and test text are processed only in this browser.</span></p></section>
+  </main>
+  <footer class="site-footer"><span>Toolkitly</span><span>·</span><a href="../privacy.html">Privacy</a></footer>
+  <script type="module" src="../assets/js/regex-tools.js"></script>
+</body>
+</html>

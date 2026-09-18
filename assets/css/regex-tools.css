@@ -1,0 +1,17 @@
+.regex-form { display: grid; grid-template-columns: minmax(0, 1fr) 8rem auto; gap: var(--space-3); align-items: end; margin-top: var(--space-8); padding: var(--space-4); border: 1px solid var(--border); border-radius: var(--radius-md); background: var(--surface); }
+.regex-form label { display: grid; gap: var(--space-2); color: var(--text-muted); font-family: var(--font-mono); font-size: .72rem; letter-spacing: .05em; text-transform: uppercase; }
+.regex-form input, .regex-source { width: 100%; padding: .62rem .7rem; border: 1px solid var(--border); border-radius: var(--radius-sm); background: var(--surface-raised); color: var(--text); outline: 0; font-family: var(--font-mono); }
+.regex-form input:focus, .regex-source:focus { border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-surface); }
+.regex-source { display: block; min-height: 14rem; margin-top: var(--space-4); resize: vertical; font-size: .84rem; line-height: 1.65; }
+.regex-results { margin-top: var(--space-4); overflow: hidden; border: 1px solid var(--border); border-radius: var(--radius-md); background: var(--surface); }
+.regex-results-header { display: flex; justify-content: space-between; gap: var(--space-3); padding: var(--space-3) var(--space-4); border-bottom: 1px solid var(--border); color: var(--text-faint); font-family: var(--font-mono); font-size: .72rem; letter-spacing: .06em; text-transform: uppercase; }
+.regex-results-scroll { overflow-x: auto; }
+.regex-results table { width: 100%; border-collapse: collapse; font-family: var(--font-mono); font-size: .8rem; }
+.regex-results th, .regex-results td { padding: .7rem .85rem; border-bottom: 1px solid var(--border); text-align: left; vertical-align: top; white-space: pre-wrap; overflow-wrap: anywhere; }
+.regex-results th { color: var(--text-faint); font-size: .7rem; letter-spacing: .06em; text-transform: uppercase; }
+.regex-results td { color: var(--text-muted); }
+.regex-examples { display: flex; flex-wrap: wrap; gap: var(--space-2); margin-top: var(--space-4); }
+.regex-cheatsheet { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: var(--space-3); margin-top: var(--space-4); }
+.regex-cheatsheet p { margin: 0; padding: var(--space-3); border: 1px solid var(--border); border-radius: var(--radius-sm); color: var(--text-muted); font-family: var(--font-mono); font-size: .78rem; }
+.regex-cheatsheet code { color: var(--accent-strong); }
+@media (max-width: 48rem) { .regex-form { grid-template-columns: 1fr; } .regex-cheatsheet { grid-template-columns: 1fr; } }

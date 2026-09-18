@@ -1,0 +1,17 @@
+.jwt-controls { display: grid; grid-template-columns: minmax(11rem, .45fr) minmax(0, 1.55fr) auto; gap: var(--space-3); align-items: end; margin-top: var(--space-8); padding: var(--space-4); border: 1px solid var(--border); border-radius: var(--radius-md); background: var(--surface); }
+.jwt-controls label { display: grid; gap: var(--space-2); color: var(--text-muted); font-family: var(--font-mono); font-size: .72rem; letter-spacing: .05em; text-transform: uppercase; }
+.jwt-controls select, .jwt-controls textarea { width: 100%; border: 1px solid var(--border); border-radius: var(--radius-sm); background: var(--surface-raised); color: var(--text); outline: 0; }
+.jwt-controls select { min-height: 2.6rem; padding: .55rem .65rem; }
+.jwt-controls textarea { min-height: 5.25rem; padding: .6rem .7rem; resize: vertical; font-family: var(--font-mono); font-size: .78rem; }
+.jwt-controls select:focus, .jwt-controls textarea:focus { border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-surface); }
+.jwt-layout { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--space-4); margin-top: var(--space-4); }
+.jwt-layout .tool-panel { min-height: 15rem; }
+.jwt-layout .tool-panel pre { min-height: 12rem; }
+.jwt-layout .jwt-claims { grid-column: 1 / -1; min-height: 10rem; }
+.jwt-layout .jwt-claims pre { min-height: 7rem; }
+.jwt-statuses { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--space-3); margin-top: var(--space-3); }
+.jwt-status { min-height: 3rem; margin: 0; padding: var(--space-3); border: 1px solid var(--border); border-radius: var(--radius-sm); color: var(--text-muted); font-size: .875rem; }
+.jwt-status[data-status='error'] { border-color: color-mix(in srgb, var(--error) 60%, var(--border)); color: var(--error); }
+.jwt-status[data-status='success'] { border-color: color-mix(in srgb, var(--success) 50%, var(--border)); color: var(--success); }
+.jwt-warning { border-color: color-mix(in srgb, var(--error) 35%, var(--border)); background: color-mix(in srgb, var(--error) 8%, var(--surface)); }
+@media (max-width: 52rem) { .jwt-controls { grid-template-columns: 1fr; } .jwt-layout, .jwt-statuses { grid-template-columns: 1fr; } }

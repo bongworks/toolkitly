@@ -1,0 +1,25 @@
+<!doctype html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Decode and verify compact JWT signatures locally in your browser.">
+  <title>JWT Inspector | Toolkitly</title>
+  <link rel="stylesheet" href="../assets/css/tokens.css"><link rel="stylesheet" href="../assets/css/components.css"><link rel="stylesheet" href="../assets/css/tool-page.css"><link rel="stylesheet" href="../assets/css/jwt-tools.css">
+</head>
+<body>
+  <a class="skip-link" href="#workbench">Skip to tool</a>
+  <header class="site-header"><nav class="site-nav"><a class="brand" href="../index.html"><span class="brand-mark" aria-hidden="true">&lt;/&gt;</span><span>Toolkitly</span></a><p class="tool-breadcrumb"><a href="../index.html">Tools</a><span>/</span><span data-en="JWT Inspector" data-ko="JWT 검사기">JWT Inspector</span></p><div class="nav-actions"><button class="icon-button" data-page-language type="button">EN</button><button class="icon-button" data-page-theme type="button" aria-label="Switch theme">◐</button></div></nav></header>
+  <main id="workbench" class="page-shell tool-page">
+    <section class="tool-heading"><p class="eyebrow" data-en="DATA & DEVELOPER" data-ko="데이터·개발">DATA &amp; DEVELOPER</p><h1 data-en="JWT Inspector" data-ko="JWT 검사기">JWT Inspector</h1><p data-en="Decode a compact JWT and verify its signature with a key you provide." data-ko="컴팩트 JWT를 디코딩하고 사용자가 입력한 키로 서명을 검증합니다.">Decode a compact JWT and verify its signature with a key you provide.</p></section>
+    <section class="tool-note jwt-warning"><span aria-hidden="true">!</span><p><strong data-en="Decoding is not verification." data-ko="디코딩은 검증이 아닙니다.">Decoding is not verification.</strong> <span data-en="JWTs and keys never leave this browser. Do not paste a secret you do not control." data-ko="JWT와 키는 이 브라우저 밖으로 전송되지 않습니다. 관리 권한이 없는 비밀값은 붙여넣지 마세요.">JWTs and keys never leave this browser. Do not paste a secret you do not control.</span></p></section>
+    <section class="tool-workbench">
+      <div class="tool-panel"><div class="tool-panel-heading"><label for="jwt-token" data-en="COMPACT JWT" data-ko="컴팩트 JWT">COMPACT JWT</label></div><textarea id="jwt-token" spellcheck="false" data-placeholder-en="Paste header.payload.signature" data-placeholder-ko="header.payload.signature를 붙여넣으세요" placeholder="Paste header.payload.signature"></textarea></div>
+      <div class="jwt-controls"><label><span data-en="KEY TYPE" data-ko="키 유형">KEY TYPE</span><select id="jwt-key-type"><option value="secret" data-en="HMAC shared secret" data-ko="HMAC 공유 비밀값">HMAC shared secret</option><option value="publicKey" data-en="PEM SPKI public key" data-ko="PEM SPKI 공개 키">PEM SPKI public key</option></select></label><label for="jwt-key"><span data-en="VERIFICATION KEY" data-ko="검증 키">VERIFICATION KEY</span><textarea id="jwt-key" spellcheck="false" data-placeholder-en="Enter an HMAC secret or paste a PEM SPKI public key" data-placeholder-ko="HMAC 비밀값을 입력하거나 PEM SPKI 공개 키를 붙여넣으세요" placeholder="Enter an HMAC secret or paste a PEM SPKI public key"></textarea></label><div class="button-group"><button class="button" id="jwt-decode" type="button" data-en="Decode" data-ko="디코딩">Decode</button><button class="button button-primary" id="jwt-verify" type="button" data-en="Verify signature" data-ko="서명 검증">Verify signature</button></div></div>
+      <div class="jwt-layout"><section class="tool-panel"><div class="tool-panel-heading"><span data-en="HEADER" data-ko="헤더">HEADER</span><button class="text-button" type="button" data-copy-target="#jwt-header-output" data-en="Copy" data-ko="복사">Copy</button></div><pre id="jwt-header-output" tabindex="0"></pre></section><section class="tool-panel"><div class="tool-panel-heading"><span data-en="PAYLOAD" data-ko="페이로드">PAYLOAD</span><button class="text-button" type="button" data-copy-target="#jwt-payload-output" data-en="Copy" data-ko="복사">Copy</button></div><pre id="jwt-payload-output" tabindex="0"></pre></section><section class="tool-panel jwt-claims"><div class="tool-panel-heading"><span data-en="REGISTERED CLAIMS & TIMES" data-ko="등록 클레임·시간">REGISTERED CLAIMS &amp; TIMES</span><button class="text-button" type="button" data-copy-target="#jwt-claims-output" data-en="Copy" data-ko="복사">Copy</button></div><pre id="jwt-claims-output" tabindex="0"></pre></section></div>
+      <div class="jwt-statuses"><p id="jwt-decode-status" class="jwt-status" aria-live="polite" data-en="Paste a JWT and choose Decode. Decoding alone does not validate trust." data-ko="JWT를 붙여넣고 디코딩하세요. 디코딩만으로 신뢰성을 검증하지는 않습니다.">Paste a JWT and choose Decode. Decoding alone does not validate trust.</p><p id="jwt-verify-status" class="jwt-status" aria-live="polite" data-en="Signature verification has not run." data-ko="서명 검증을 아직 실행하지 않았습니다.">Signature verification has not run.</p></div>
+    </section>
+  </main>
+  <footer class="site-footer"><span>Toolkitly</span><span>·</span><a href="../privacy.html">Privacy</a></footer>
+  <script type="module" src="../assets/js/jwt-tools.js"></script>
+</body>
+</html>
