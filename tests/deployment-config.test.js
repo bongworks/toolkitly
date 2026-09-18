@@ -1,8 +1,15 @@
 import assert from 'node:assert/strict';
-import { readFile } from 'node:fs/promises';
+import { readFile, stat } from 'node:fs/promises';
 import test from 'node:test';
 
 const readProjectFile = (path) => readFile(new URL(`../${path}`, import.meta.url), 'utf8');
+
+test('deployment runner script is executable after checkout', async () => {
+  const scriptPath = new URL('../deploy/deploy-on-runner.sh', import.meta.url);
+  const scriptStats = await stat(scriptPath);
+
+  assert.notEqual(scriptStats.mode & 0o111, 0);
+});
 
 test('deployment workflow builds the static release from GitHub Variables on port 34561', async () => {
   const workflow = await readProjectFile('.github/workflows/deploy.yml');
