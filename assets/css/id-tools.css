@@ -1,0 +1,10 @@
+.identifier-controls { display: flex; flex-wrap: wrap; align-items: end; gap: var(--space-4); margin-top: var(--space-8); padding: var(--space-4); border: 1px solid var(--border); border-radius: var(--radius-md); background: var(--surface); }
+.identifier-controls label, .identifier-validation label { display: grid; gap: var(--space-2); color: var(--text-muted); font-family: var(--font-mono); font-size: .72rem; letter-spacing: .05em; text-transform: uppercase; }
+.identifier-controls select, .identifier-controls input, .identifier-validation input { min-width: 10rem; padding: .55rem .65rem; border: 1px solid var(--border); border-radius: .4rem; background: var(--surface-raised); color: var(--text); }
+.identifier-output { min-height: 20rem; }
+.identifier-validation { display: flex; flex-wrap: wrap; align-items: end; gap: var(--space-3); margin-top: var(--space-4); padding: var(--space-4); border: 1px solid var(--border); border-radius: var(--radius-md); background: var(--surface); }
+.identifier-validation label { flex: 1 1 20rem; }
+.identifier-validation p { width: 100%; min-height: 1.5rem; margin: 0; color: var(--text-muted); }
+.identifier-validation p[data-status='success'] { color: var(--success); }
+.identifier-validation p[data-status='error'] { color: var(--error); }
+@media (max-width: 48rem) { .identifier-controls, .identifier-validation { align-items: stretch; flex-direction: column; } }
