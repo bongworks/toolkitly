@@ -48,6 +48,17 @@ This is useful for tool development, but it is not the production artifact: the 
 
 For deployment, configure the host with `npm run build` as its build command and publish `dist/`. The build replaces the template origin in `dist/robots.txt` and `dist/sitemap.xml`, and transforms every public HTML page with the configured canonical origin. Set `PUBLIC_SITE_URL` before building if the production domain differs from its default. Add the final contact address to `privacy.html`, then submit the deployed sitemap to Search Console after the domain is live.
 
+### GitHub Actions deployment
+
+Push a `release-X.Y.Z` tag or run **Build and deploy** manually to deploy through the M2 self-hosted runner. The workflow writes `.env` only for the build, runs tests, builds `dist/`, then atomically switches the `launchd` service to the new release. It serves the site on `0.0.0.0:34561`; if the local health check fails, the previous release is restored.
+
+Configure these repository-level GitHub Actions Variables before the first run:
+
+- `TOOLKITLY_DEPLOY_ROOT` — required absolute path where releases, logs, and the `current` link are kept.
+- `PUBLIC_SITE_URL`, `GA4_MEASUREMENT_ID`, `ADSENSE_CLIENT_ID`, and `GOOGLE_CONSENT_REQUIRED` — copied to the build-only `.env`; their behavior is described above.
+
+Do not store secrets in these variables. The build validates and emits only the intentionally public Google integration IDs into the browser artifact.
+
 ## Optional Google integrations
 
 With a valid `GA4_MEASUREMENT_ID`, the generated shared module loads GA4 and sends only its documented sanitized page and allowlisted tool-action events. Before enabling GA4, disable Enhanced Measurement and other automatic event collection in the GA4 data stream and Google tag account configuration, including form interactions, site search, outbound clicks, and file downloads. This is an account-side requirement; site code cannot enforce it.
