@@ -1,0 +1,55 @@
+<!doctype html>
+<html lang="en" data-theme="dark">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="Browser-local tools for links, data, time, and design work." />
+    <title>Toolkitly | Fast, private web utilities</title>
+    <link rel="stylesheet" href="assets/css/tokens.css" />
+    <link rel="stylesheet" href="assets/css/components.css" />
+  </head>
+  <body>
+    <a class="skip-link" href="#main-content">Skip to tools</a>
+    <header class="site-header">
+      <nav class="site-nav" aria-label="Main navigation">
+        <a class="brand" href="index.html" aria-label="Toolkitly home">
+          <span class="brand-mark" aria-hidden="true">&lt;/&gt;</span>
+          <span>Toolkitly</span>
+        </a>
+        <label class="site-search" for="tool-search">
+          <span class="sr-only" data-i18n="searchLabel">Search tools</span>
+          <span class="search-icon" aria-hidden="true">⌕</span>
+          <input id="tool-search" type="search" autocomplete="off" placeholder="Search tools..." data-i18n-placeholder="searchPlaceholder" />
+          <kbd>⌘ K</kbd>
+        </label>
+        <div class="nav-actions">
+          <button class="icon-button language-button" type="button" aria-label="Switch language" title="Switch language">EN</button>
+          <button class="icon-button theme-button" type="button" aria-label="Switch to light theme" title="Switch to light theme">
+            <span aria-hidden="true">◐</span>
+          </button>
+        </div>
+      </nav>
+    </header>
+
+    <main id="main-content" class="page-shell">
+      <section class="tool-directory" aria-labelledby="directory-title">
+        <div class="section-heading">
+          <p class="eyebrow" data-i18n="eyebrow">BROWSER-LOCAL UTILITIES</p>
+          <h1 id="directory-title" data-i18n="title">Useful tools. No account needed.</h1>
+          <p data-i18n="subtitle">Fast utilities for links, data, time, and design work. Your input stays in your browser.</p>
+        </div>
+        <div id="category-filters" class="category-filters" aria-label="Tool categories"></div>
+        <p id="tool-count" class="tool-count" aria-live="polite"></p>
+        <div id="tool-grid" class="tool-grid" aria-live="polite"></div>
+        <p id="empty-state" class="empty-state" hidden data-i18n="emptyState">No matching tools found.</p>
+      </section>
+    </main>
+
+    <footer class="site-footer">
+      <span>Toolkitly</span>
+      <span class="footer-separator" aria-hidden="true">·</span>
+      <a href="privacy.html" data-i18n="privacy">Privacy</a>
+    </footer>
+    <script type="module" src="assets/js/home.js"></script>
+  </body>
+</html>
