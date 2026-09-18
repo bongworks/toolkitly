@@ -1,0 +1,9 @@
+.hash-controls { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: var(--space-3); }
+.hash-field { display: grid; gap: var(--space-2); }
+.hash-field label { color: var(--text-muted); font-family: var(--font-mono); font-size: .75rem; letter-spacing: .05em; text-transform: uppercase; }
+.hash-field input, .hash-field select, .hash-field textarea { width: 100%; min-width: 0; padding: .65rem .75rem; border: 1px solid var(--border); border-radius: var(--radius-sm); background: var(--surface-raised); color: var(--text); font: inherit; }
+.hash-input { min-height: 15rem; resize: vertical; font-family: var(--font-mono); }
+.hash-results { display: grid; gap: var(--space-3); }
+.hash-result { min-height: 5rem; overflow: auto; overflow-wrap: anywhere; }
+.hash-note { margin-top: var(--space-6); }
+@media (max-width: 48rem) { .hash-controls { grid-template-columns: 1fr; } }
