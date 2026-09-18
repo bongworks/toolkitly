@@ -1,0 +1,88 @@
+<!doctype html>
+<html lang="en" data-theme="dark">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="Format, validate, and minify JSON entirely in your browser." />
+    <title>JSON Formatter | Toolkitly</title>
+    <link rel="stylesheet" href="../assets/css/tokens.css" />
+    <link rel="stylesheet" href="../assets/css/components.css" />
+  </head>
+  <body>
+    <a class="skip-link" href="#formatter-workbench">Skip to formatter</a>
+    <header class="site-header">
+      <nav class="site-nav" aria-label="Main navigation">
+        <a class="brand" href="../index.html" aria-label="Toolkitly home">
+          <span class="brand-mark" aria-hidden="true">&lt;/&gt;</span>
+          <span>Toolkitly</span>
+        </a>
+        <p class="tool-breadcrumb"><a href="../index.html">Tools</a><span aria-hidden="true">/</span><span data-i18n="formatterTitle">JSON Formatter</span></p>
+        <div class="nav-actions">
+          <button class="icon-button" id="page-language" type="button" aria-label="Switch language">EN</button>
+          <button class="icon-button" id="page-theme" type="button" aria-label="Switch to light theme"><span aria-hidden="true">◐</span></button>
+        </div>
+      </nav>
+    </header>
+
+    <main id="formatter-workbench" class="page-shell tool-page">
+      <section class="tool-heading" aria-labelledby="tool-title">
+        <p class="eyebrow" data-i18n="formatterCategory">DATA &amp; DEVELOPER</p>
+        <h1 id="tool-title" data-i18n="formatterTitle">JSON Formatter</h1>
+        <p data-i18n="formatterSubtitle">Format, validate, and minify JSON. Everything runs in your browser.</p>
+      </section>
+
+      <section class="formatter-toolbar" aria-label="JSON formatter controls">
+        <label for="indent-size"><span data-i18n="formatterIndent">Indentation</span>
+          <select id="indent-size">
+            <option value="2">2 spaces</option>
+            <option value="4">4 spaces</option>
+            <option value="1">1 space</option>
+          </select>
+        </label>
+        <div id="formatter-actions" class="button-group">
+          <button class="button button-primary" type="button" data-action="format" data-i18n="formatterFormat">Format JSON</button>
+          <button class="button" type="button" data-action="minify" data-i18n="formatterMinify">Minify</button>
+          <button class="button button-quiet" id="clear-json" type="button" data-i18n="formatterClear">Clear</button>
+        </div>
+      </section>
+
+      <section class="formatter-grid" aria-label="JSON input and output">
+        <div class="editor-panel panel">
+          <div class="panel-heading"><label for="json-source" data-i18n="formatterInput">INPUT</label><span data-i18n="formatterPaste">paste JSON</span></div>
+          <textarea id="json-source" spellcheck="false" autocapitalize="off" autocomplete="off" data-i18n-placeholder="formatterPlaceholder" placeholder='{"project":"Toolkitly","private":true}'></textarea>
+        </div>
+        <div class="editor-panel panel" data-state="idle">
+          <div class="panel-heading"><span data-i18n="formatterOutput">OUTPUT</span><button class="text-button" id="copy-result" type="button" data-i18n="formatterCopy">Copy result</button></div>
+          <pre tabindex="0"><code id="json-output"></code></pre>
+        </div>
+      </section>
+      <p id="formatter-status" class="formatter-status" aria-live="polite" data-i18n="formatterInitialStatus">Paste JSON, then choose Format JSON or Minify.</p>
+
+      <section class="privacy-note" aria-label="Privacy note">
+        <span aria-hidden="true">⌁</span>
+        <p><strong data-i18n="formatterPrivacyTitle">Private by default.</strong> <span data-i18n="formatterPrivacyText">Your JSON is processed only in this browser and is never uploaded by this tool.</span></p>
+      </section>
+    </main>
+    <footer class="site-footer"><span>Toolkitly</span><span class="footer-separator" aria-hidden="true">·</span><a href="../privacy.html">Privacy</a></footer>
+    <script type="module">
+      import { getStoredLanguage, setLanguage, translateStaticContent } from '../assets/js/i18n.js';
+      import { initializeTheme, toggleTheme } from '../assets/js/theme.js';
+
+      const languageButton = document.querySelector('#page-language');
+      const themeButton = document.querySelector('#page-theme');
+      let language = setLanguage(getStoredLanguage());
+      initializeTheme();
+      function renderLanguage() {
+        translateStaticContent(language);
+        languageButton.textContent = language.toUpperCase();
+      }
+      renderLanguage();
+      languageButton.addEventListener('click', () => {
+        language = setLanguage(language === 'en' ? 'ko' : 'en');
+        renderLanguage();
+      });
+      themeButton.addEventListener('click', () => toggleTheme());
+    </script>
+    <script type="module" src="../assets/js/json-formatter.js"></script>
+  </body>
+</html>
