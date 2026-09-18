@@ -1,0 +1,7 @@
+.time-tool-form { display:grid; gap:1rem; padding:1rem; border:1px solid var(--border); border-radius:var(--radius-md); background:var(--surface); }
+.time-tool-form label { display:grid; gap:.45rem; color:var(--text-muted); font-family:var(--font-mono); font-size:.72rem; letter-spacing:.05em; text-transform:uppercase; }
+.time-tool-form input,.time-tool-form select { width:100%; padding:.7rem .75rem; border:1px solid var(--border); border-radius:.4rem; background:var(--surface-raised); color:var(--text); font:inherit; }
+.color-row { display:grid; grid-template-columns:1fr 1fr; gap:1rem; }
+.tool-result { min-height:12rem; }
+.swatch { min-height:3rem; border:1px solid var(--border); border-radius:.4rem; }
+@media(max-width:48rem) { .color-row { grid-template-columns:1fr; } }
