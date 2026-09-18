@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="en" data-theme="dark">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="Toolkitly privacy information." />
+    <title>Privacy | Toolkitly</title>
+    <link rel="stylesheet" href="assets/css/tokens.css" />
+    <link rel="stylesheet" href="assets/css/components.css" />
+  </head>
+  <body>
+    <header class="site-header">
+      <nav class="site-nav" aria-label="Main navigation">
+        <a class="brand" href="index.html" aria-label="Toolkitly home"><span class="brand-mark" aria-hidden="true">&lt;/&gt;</span><span>Toolkitly</span></a>
+        <p class="tool-breadcrumb"><a href="index.html">Tools</a><span aria-hidden="true">/</span><span>Privacy</span></p>
+        <div class="nav-actions"><button class="icon-button" id="privacy-theme" type="button" aria-label="Switch theme"><span aria-hidden="true">◐</span></button></div>
+      </nav>
+    </header>
+    <main class="page-shell policy-page">
+      <p class="eyebrow">PRIVACY</p>
+      <h1>Privacy by design</h1>
+      <p class="policy-lead">Toolkitly is designed to run its tools in your browser.</p>
+      <section class="policy-section">
+        <h2>Tool input</h2>
+        <p>JSON and other values entered into currently available tools are processed only in your browser. Toolkitly does not upload, store, or sell that input.</p>
+        <p>현재 제공되는 도구에 입력한 JSON과 기타 값은 브라우저 안에서만 처리됩니다. Toolkitly는 이 입력값을 업로드, 저장 또는 판매하지 않습니다.</p>
+      </section>
+      <section class="policy-section">
+        <h2>Future services</h2>
+        <p>Analytics, advertising, or third-party services may be added after launch. Before enabling them, this page will be updated with the data involved, the provider, and applicable consent choices.</p>
+      </section>
+      <section class="policy-section">
+        <h2>Contact</h2>
+        <p>Publish a project contact address here before public launch.</p>
+      </section>
+    </main>
+    <footer class="site-footer"><span>Toolkitly</span><span class="footer-separator" aria-hidden="true">·</span><a href="index.html">Tools</a></footer>
+    <script type="module">
+      import { initializeTheme, toggleTheme } from './assets/js/theme.js';
+      initializeTheme();
+      document.querySelector('#privacy-theme').addEventListener('click', toggleTheme);
+    </script>
+  </body>
+</html>
