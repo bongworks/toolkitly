@@ -44,6 +44,17 @@ test('diffText reports changed, added, and removed lines with one-based line num
   });
 });
 
+test('diffText aligns unchanged lines after a middle insertion or removal', () => {
+  assert.deepEqual(diffText('first\nlast', 'first\ninserted\nlast'), {
+    ok: true,
+    value: { comparedLines: 3, changes: [{ line: 2, type: 'added', after: 'inserted' }] }
+  });
+  assert.deepEqual(diffText('first\nremoved\nlast', 'first\nlast'), {
+    ok: true,
+    value: { comparedLines: 3, changes: [{ line: 2, type: 'removed', before: 'removed' }] }
+  });
+});
+
 test('compareDiffSources reports forced JSON errors and falls back to text in automatic mode', () => {
   const invalidJson = compareDiffSources('{not json}', '{}', 'json');
   assert.equal(invalidJson.ok, false);

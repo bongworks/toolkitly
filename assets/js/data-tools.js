@@ -56,16 +56,42 @@ export function diffText(beforeSource, afterSource, options = {}) {
   const beforeLines = prepareTextLines(String(beforeSource), options);
   const afterLines = prepareTextLines(String(afterSource), options);
   const comparedLines = Math.max(beforeLines.length, afterLines.length);
-  const changes = [];
+  const lengths = Array.from({ length: beforeLines.length + 1 }, () => Array(afterLines.length + 1).fill(0));
+  for (let beforeIndex = beforeLines.length - 1; beforeIndex >= 0; beforeIndex -= 1) {
+    for (let afterIndex = afterLines.length - 1; afterIndex >= 0; afterIndex -= 1) {
+      lengths[beforeIndex][afterIndex] = beforeLines[beforeIndex].normalized === afterLines[afterIndex].normalized
+        ? lengths[beforeIndex + 1][afterIndex + 1] + 1
+        : Math.max(lengths[beforeIndex + 1][afterIndex], lengths[beforeIndex][afterIndex + 1]);
+    }
+  }
 
-  for (let index = 0; index < comparedLines; index += 1) {
-    const before = beforeLines[index];
-    const after = afterLines[index];
-    if (!before) changes.push({ line: after.line, type: 'added', after: after.text });
-    else if (!after) changes.push({ line: before.line, type: 'removed', before: before.text });
-    else if (before.normalized !== after.normalized) {
+  const matches = [];
+  let beforeIndex = 0;
+  let afterIndex = 0;
+  while (beforeIndex < beforeLines.length && afterIndex < afterLines.length) {
+    if (beforeLines[beforeIndex].normalized === afterLines[afterIndex].normalized) {
+      matches.push({ beforeIndex, afterIndex });
+      beforeIndex += 1;
+      afterIndex += 1;
+    } else if (lengths[beforeIndex + 1][afterIndex] >= lengths[beforeIndex][afterIndex + 1]) beforeIndex += 1;
+    else afterIndex += 1;
+  }
+
+  const changes = [];
+  const anchors = [{ beforeIndex: -1, afterIndex: -1 }, ...matches, { beforeIndex: beforeLines.length, afterIndex: afterLines.length }];
+  for (let index = 1; index < anchors.length; index += 1) {
+    const previous = anchors[index - 1];
+    const current = anchors[index];
+    const beforeChanges = beforeLines.slice(previous.beforeIndex + 1, current.beforeIndex);
+    const afterChanges = afterLines.slice(previous.afterIndex + 1, current.afterIndex);
+    const changedCount = Math.min(beforeChanges.length, afterChanges.length);
+    for (let changeIndex = 0; changeIndex < changedCount; changeIndex += 1) {
+      const before = beforeChanges[changeIndex];
+      const after = afterChanges[changeIndex];
       changes.push({ line: Math.max(before.line, after.line), type: 'changed', before: before.text, after: after.text });
     }
+    for (const before of beforeChanges.slice(changedCount)) changes.push({ line: before.line, type: 'removed', before: before.text });
+    for (const after of afterChanges.slice(changedCount)) changes.push({ line: after.line, type: 'added', after: after.text });
   }
 
   return { ok: true, value: { changes, comparedLines } };
@@ -242,6 +268,7 @@ if (typeof document !== 'undefined') {
     const language = currentLanguage();
     for (const element of document.querySelectorAll('[data-en][data-ko]')) element.textContent = element.dataset[language];
     for (const element of document.querySelectorAll('[data-placeholder-en][data-placeholder-ko]')) element.placeholder = element.dataset[`placeholder${language === 'ko' ? 'Ko' : 'En'}`];
+    for (const element of document.querySelectorAll('[data-aria-label-en][data-aria-label-ko]')) element.setAttribute('aria-label', element.dataset[`ariaLabel${language === 'ko' ? 'Ko' : 'En'}`]);
   }
   translateDataLabels();
   new MutationObserver(translateDataLabels).observe(document.documentElement, { attributes: true, attributeFilter: ['lang'] });
@@ -277,7 +304,9 @@ if (typeof document !== 'undefined') {
     const result = compareDiffSources(diffBefore.value, diffAfter.value, mode, options);
     if (!result.ok) {
       diffOutput.textContent = '';
-      diffStatus.textContent = result.message;
+      diffStatus.textContent = currentLanguage() === 'ko' && mode === 'json' && result.message.startsWith('Invalid JSON:')
+        ? 'JSON 형식이 올바르지 않습니다. 유효한 JSON을 입력하거나 텍스트 줄 모드를 선택하세요.'
+        : result.message;
       diffPanel.dataset.state = 'error';
       return;
     }
