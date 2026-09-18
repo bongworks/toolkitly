@@ -4,6 +4,8 @@ import {
   timestampToDate,
   dateToTimestamp,
   getTimeZoneParts,
+  formatTimestampDetails,
+  formatTimezoneSummary,
   contrastRatio,
   contrastRating,
   convertColor
@@ -18,11 +20,26 @@ test('dateToTimestamp converts ISO dates to seconds', () => {
   assert.equal(dateToTimestamp('2024-01-01T00:00:00.000Z'), 1704067200);
 });
 
+test('formatTimestampDetails includes UTC, local, ISO, and relative values', () => {
+  const details = formatTimestampDetails('1704067200', new Date('2024-01-01T01:00:00.000Z'));
+  assert.equal(details.iso, '2024-01-01T00:00:00.000Z');
+  assert.match(details.utc, /2024/);
+  assert.match(details.local, /2024/);
+  assert.equal(details.relative, '1 hour ago');
+});
+
 test('getTimeZoneParts formats a known instant with Intl', () => {
   const parts = getTimeZoneParts('2024-01-01T00:00:00.000Z', 'America/Los_Angeles');
   assert.equal(parts.timeZone, 'America/Los_Angeles');
   assert.equal(parts.date, '12/31/2023');
   assert.match(parts.time, /16:00/);
+});
+
+test('formatTimezoneSummary returns all selected zones', () => {
+  const summary = formatTimezoneSummary('2024-01-01T00:00:00.000Z', ['UTC', 'Asia/Seoul', 'America/New_York']);
+  assert.equal(summary.length, 3);
+  assert.deepEqual(summary.map((entry) => entry.timeZone), ['UTC', 'Asia/Seoul', 'America/New_York']);
+  assert.match(summary[1].time, /09:00/);
 });
 
 test('contrast ratio of black and white is 21', () => {

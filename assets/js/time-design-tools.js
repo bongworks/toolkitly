@@ -17,6 +17,31 @@ export function dateToTimestamp(input) {
   return Math.floor(date.getTime() / 1000);
 }
 
+function formatDateTime(date, timeZone, language = 'en') {
+  return new Intl.DateTimeFormat(language === 'ko' ? 'ko-KR' : 'en-US', {
+    timeZone, dateStyle: 'medium', timeStyle: 'medium'
+  }).format(date);
+}
+
+export function formatRelativeTime(date, reference = new Date(), language = 'en') {
+  const seconds = (date.getTime() - reference.getTime()) / 1000;
+  const units = [[31536000, 'year'], [2592000, 'month'], [604800, 'week'], [86400, 'day'], [3600, 'hour'], [60, 'minute']];
+  const [divisor, unit] = units.find(([size]) => Math.abs(seconds) >= size) ?? [1, 'second'];
+  return new Intl.RelativeTimeFormat(language === 'ko' ? 'ko' : 'en', { numeric: 'always' }).format(Math.round(seconds / divisor), unit);
+}
+
+export function formatTimestampDetails(input, reference = new Date(), language = 'en') {
+  const date = timestampToDate(input);
+  const browserTimeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+  return {
+    utc: formatDateTime(date, 'UTC', language),
+    local: formatDateTime(date, browserTimeZone, language),
+    timeZone: browserTimeZone,
+    iso: date.toISOString(),
+    relative: formatRelativeTime(date, reference, language)
+  };
+}
+
 export function getTimeZoneParts(input, timeZone = Intl.DateTimeFormat().resolvedOptions().timeZone) {
   const date = input instanceof Date ? input : new Date(input);
   if (Number.isNaN(date.getTime())) throw new Error('Enter a valid date.');
@@ -24,6 +49,12 @@ export function getTimeZoneParts(input, timeZone = Intl.DateTimeFormat().resolve
   const timeFormatter = new Intl.DateTimeFormat('en-US', { timeZone, hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false });
   const zoneFormatter = new Intl.DateTimeFormat('en-US', { timeZone, timeZoneName: 'short' });
   return { timeZone, date: dateFormatter.format(date), time: timeFormatter.format(date).replace(/^24:/, '00:'), zone: zoneFormatter.formatToParts(date).find((part) => part.type === 'timeZoneName')?.value ?? '' };
+}
+
+export function formatTimezoneSummary(input, timeZones) {
+  const date = input instanceof Date ? input : new Date(input);
+  if (Number.isNaN(date.getTime())) throw new Error('Enter a valid date.');
+  return timeZones.map((timeZone) => ({ ...getTimeZoneParts(date, timeZone), timeZone }));
 }
 
 function parseColor(input) {
@@ -95,15 +126,16 @@ function localize(root) {
 
 function setupTimestamp() {
   const input = document.querySelector('#timestamp-input'); const output = document.querySelector('#timestamp-output'); const status = document.querySelector('#timestamp-status');
-  const render = (mode) => { try { const result = mode === 'date' ? timestampToDate(input.value).toISOString() : String(dateToTimestamp(input.value)); output.textContent = result; status.textContent = 'Done. Your result is ready.'; status.dataset.status = 'success'; } catch (error) { output.textContent = ''; status.textContent = error.message; status.dataset.status = 'error'; } };
+  const render = (mode) => { try { if (mode === 'timestamp') { output.textContent = String(dateToTimestamp(input.value)); } else { const details = formatTimestampDetails(input.value); output.textContent = `UTC       ${details.utc}\nLocal     ${details.local}\nISO       ${details.iso}\nRelative  ${details.relative}`; } status.textContent = 'Done. Your result is ready.'; status.dataset.status = 'success'; } catch (error) { output.textContent = ''; status.textContent = error.message; status.dataset.status = 'error'; } };
   document.querySelector('[data-action="to-date"]')?.addEventListener('click', () => render('date'));
   document.querySelector('[data-action="to-timestamp"]')?.addEventListener('click', () => render('timestamp'));
 }
 
 function setupTimezone() {
-  const input = document.querySelector('#timezone-input'); const zone = document.querySelector('#timezone-zone'); const output = document.querySelector('#timezone-output'); const status = document.querySelector('#timezone-status');
-  const render = () => { try { const result = getTimeZoneParts(input.value, zone.value); output.textContent = `${result.date} ${result.time} (${result.zone})`; status.textContent = 'Done. Your result is ready.'; status.dataset.status = 'success'; } catch (error) { output.textContent = ''; status.textContent = error.message; status.dataset.status = 'error'; } };
-  document.querySelector('[data-action="convert-timezone"]')?.addEventListener('click', render); render();
+  const input = document.querySelector('#timezone-input'); const output = document.querySelector('#timezone-output'); const status = document.querySelector('#timezone-status');
+  const getZones = () => [...document.querySelectorAll('[data-timezone-select]')].map((select) => select.value);
+  const render = () => { try { const summary = formatTimezoneSummary(input.value, getZones()); output.textContent = summary.map((result) => `${result.timeZone}\n  ${result.date} ${result.time} (${result.zone})`).join('\n\n'); status.textContent = 'Done. Your result is ready.'; status.dataset.status = 'success'; return output.textContent; } catch (error) { output.textContent = ''; status.textContent = error.message; status.dataset.status = 'error'; return ''; } };
+  document.querySelector('[data-action="convert-timezone"]')?.addEventListener('click', render); document.querySelector('[data-action="copy-timezone"]')?.addEventListener('click', async () => { const text = render(); if (!text) return; try { await navigator.clipboard.writeText(text); status.textContent = 'Summary copied to clipboard.'; } catch { status.textContent = 'Copy failed. Select the summary and copy it manually.'; } }); render();
 }
 
 function setupContrast() {
