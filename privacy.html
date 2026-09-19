@@ -56,9 +56,10 @@
     <script type="module">
       import { initializeTheme, toggleTheme } from './assets/js/theme.js';
       import { getCopy, getStoredLanguage, setLanguage, translateStaticContent } from './assets/js/i18n.js';
+      import { getSeoCopy, localePathFor } from './assets/js/seo-copy.js';
 
       const languageButton = document.querySelector('#privacy-language');
-      let language = setLanguage(getStoredLanguage());
+      let language = setLanguage(document.documentElement.lang === 'ko' ? 'ko' : getStoredLanguage());
 
       function renderLanguage() {
         translateStaticContent(language);
@@ -67,14 +68,18 @@
         }
         languageButton.textContent = language.toUpperCase();
         languageButton.setAttribute('aria-label', getCopy(language, 'languageLabel'));
-        document.title = `${getCopy(language, 'privacy')} | Toolkitly`;
+        const copy = getSeoCopy(window.location.pathname);
+        document.title = copy?.title[language] ?? `${getCopy(language, 'privacy')} | Toolkitly`;
+        const description = document.querySelector('meta[name="description"]');
+        if (description && copy) description.content = copy.description[language];
       }
 
       initializeTheme();
       renderLanguage();
       languageButton.addEventListener('click', () => {
-        language = setLanguage(language === 'en' ? 'ko' : 'en');
-        renderLanguage();
+        const nextLanguage = language === 'en' ? 'ko' : 'en';
+        setLanguage(nextLanguage);
+        window.location.assign(localePathFor(window.location.pathname, nextLanguage));
       });
       document.querySelector('#privacy-theme').addEventListener('click', toggleTheme);
     </script>

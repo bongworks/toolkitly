@@ -1,3 +1,5 @@
+import { applySeoDocumentCopy } from './seo-copy.js';
+
 const STORAGE_KEY = 'toolkitly-language';
 
 export const COPY = {
@@ -92,4 +94,6 @@ export function translateStaticContent(language) {
   for (const element of document.querySelectorAll('[data-i18n-placeholder]')) {
     element.placeholder = getCopy(language, element.dataset.i18nPlaceholder);
   }
+
+  applySeoDocumentCopy(document, language);
 }
