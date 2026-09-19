@@ -11,37 +11,29 @@
     <link rel="stylesheet" href="../assets/css/time-design-tools.css">
   </head>
   <body>
-    <header class="site-header">
-      <nav class="site-nav">
-        <a class="brand" href="../index.html"><span class="brand-mark">&lt;/&gt;</span><span>Toolkitly</span></a>
-        <p class="tool-breadcrumb"><a href="../index.html">Tools</a><span>/</span><span data-en="Contrast Checker" data-ko="색상 대비 검사기">색상 대비 검사기</span></p>
-        <div class="nav-actions"><button class="icon-button" data-page-language type="button">EN</button><button class="icon-button" data-page-theme type="button">◐</button></div>
-      </nav>
-    </header>
+    <header class="site-header"><nav class="site-nav"><a class="brand" href="../index.html"><span class="brand-mark">&lt;/&gt;</span><span>Toolkitly</span></a><p class="tool-breadcrumb"><a href="../index.html">Tools</a><span>/</span><span data-en="Contrast Checker" data-ko="색상 대비 검사기">색상 대비 검사기</span></p><div class="nav-actions"><button class="icon-button" data-page-language type="button">EN</button><button class="icon-button" data-page-theme type="button">◐</button></div></nav></header>
     <main class="page-shell tool-page" data-tool-root>
-      <section class="tool-heading">
-        <p class="eyebrow" data-en="DESIGN & ACCESSIBILITY" data-ko="디자인·접근성">디자인·접근성</p>
-        <h1 data-en="Contrast Checker" data-ko="색상 대비 검사기">색상 대비 검사기</h1>
-        <p data-en="Test foreground and background colors against WCAG AA and AAA." data-ko="전경색과 배경색의 WCAG 접근성 대비(AA·AAA)를 검사합니다.">전경색과 배경색의 WCAG 접근성 대비(AA·AAA)를 검사합니다.</p>
-      </section>
+      <section class="tool-heading"><p class="eyebrow" data-en="DESIGN & ACCESSIBILITY" data-ko="디자인·접근성">디자인·접근성</p><h1 data-en="Contrast Checker" data-ko="색상 대비 검사기">색상 대비 검사기</h1><p data-en="Test foreground and background colors against WCAG AA and AAA." data-ko="전경색과 배경색의 WCAG 접근성 대비(AA·AAA)를 검사합니다.">전경색과 배경색의 WCAG 접근성 대비(AA·AAA)를 검사합니다.</p></section>
       <section class="tool-workbench">
-        <div class="time-tool-form">
+        <div class="time-tool-form contrast-controls">
           <div class="color-row">
-            <div class="color-input-group">
-              <label for="contrast-foreground"><span data-en="Foreground" data-ko="전경색">전경색</span><input id="contrast-foreground" value="#ffffff"></label>
-              <button class="button button-quiet" data-action="pick-foreground" type="button" data-en="Pick from screen" data-ko="화면에서 선택">화면에서 선택</button>
-            </div>
-            <div class="color-input-group">
-              <label for="contrast-background"><span data-en="Background" data-ko="배경색">배경색</span><input id="contrast-background" value="#111827"></label>
-              <button class="button button-quiet" data-action="pick-background" type="button" data-en="Pick from screen" data-ko="화면에서 선택">화면에서 선택</button>
-            </div>
+            <div class="color-input-group"><label for="contrast-foreground"><span data-en="Foreground" data-ko="전경색">전경색</span></label><div class="color-control"><input id="contrast-foreground" value="#ffffff" aria-label="전경색"><button class="eyedropper-button" data-action="pick-foreground" type="button" title="화면에서 전경색 추출" aria-label="화면에서 전경색 추출"><svg aria-hidden="true" viewBox="0 0 24 24"><path d="m14 4 6 6M3 21l5.5-1.5L19 9l-4-4L4.5 15.5 3 21Z"/><path d="m11 8 5 5"/></svg><span data-en="Eyedropper" data-ko="스포이드">스포이드</span></button></div></div>
+            <div class="color-input-group"><label for="contrast-background"><span data-en="Background" data-ko="배경색">배경색</span></label><div class="color-control"><input id="contrast-background" value="#111827" aria-label="배경색"><button class="eyedropper-button" data-action="pick-background" type="button" title="화면에서 배경색 추출" aria-label="화면에서 배경색 추출"><svg aria-hidden="true" viewBox="0 0 24 24"><path d="m14 4 6 6M3 21l5.5-1.5L19 9l-4-4L4.5 15.5 3 21Z"/><path d="m11 8 5 5"/></svg><span data-en="Eyedropper" data-ko="스포이드">스포이드</span></button></div></div>
           </div>
-          <p class="tool-note"><span data-en="On supported Chromium desktop browsers, you can select a color anywhere on your screen, including another app or monitor." data-ko="지원되는 Chromium 데스크톱 브라우저에서는 다른 앱이나 외부 모니터를 포함한 화면 어디에서나 색상을 선택할 수 있습니다.">지원되는 Chromium 데스크톱 브라우저에서는 다른 앱이나 외부 모니터를 포함한 화면 어디에서나 색상을 선택할 수 있습니다.</span></p>
+          <p class="tool-note"><span data-en="On supported Chromium desktop browsers, use the eyedropper to select a color from another app or monitor." data-ko="지원되는 Chromium 데스크톱 브라우저에서는 스포이드로 다른 앱이나 외부 모니터의 색상을 선택할 수 있습니다.">지원되는 Chromium 데스크톱 브라우저에서는 스포이드로 다른 앱이나 외부 모니터의 색상을 선택할 수 있습니다.</span></p>
           <button class="button button-primary" data-action="check-contrast" type="button" data-en="Check contrast" data-ko="대비 검사">대비 검사</button>
         </div>
-        <div class="tool-split">
-          <div class="tool-panel"><div class="tool-panel-heading"><span data-en="PREVIEW" data-ko="미리보기">미리보기</span></div><div class="tool-result" id="contrast-preview">Aa Accessible text</div></div>
-          <div class="tool-panel"><div class="tool-panel-heading"><span data-en="WCAG RESULT" data-ko="WCAG 결과">WCAG 결과</span></div><pre class="tool-result" id="contrast-output" aria-live="polite"></pre></div>
+        <div class="tool-split contrast-layout">
+          <section class="tool-panel contrast-preview-panel"><div class="tool-panel-heading"><span data-en="PREVIEW" data-ko="미리보기">미리보기</span></div><div class="contrast-preview" id="contrast-preview">
+            <section class="contrast-preview-item contrast-preview-large"><h2 data-en="Large text preview" data-ko="대형 텍스트 미리보기">대형 텍스트 미리보기</h2><p data-en="Large text is 24px or larger, or 18.67px or larger when bold." data-ko="대형 텍스트는 일반 굵기 24px 이상 또는 굵은 글꼴 18.67px 이상입니다.">대형 텍스트는 일반 굵기 24px 이상 또는 굵은 글꼴 18.67px 이상입니다.</p></section>
+            <section class="contrast-preview-item"><h2 data-en="Normal text preview" data-ko="일반 텍스트 미리보기">일반 텍스트 미리보기</h2><p data-en="This text uses the standard WCAG text contrast threshold." data-ko="일반 텍스트에는 표준 WCAG 텍스트 대비 기준이 적용됩니다.">일반 텍스트에는 표준 WCAG 텍스트 대비 기준이 적용됩니다.</p></section>
+            <section class="contrast-preview-item"><h2 data-en="Graphic preview" data-ko="그래픽 미리보기">그래픽 미리보기</h2><div class="contrast-graphic-preview" aria-label="그래픽 아이콘 미리보기"><svg aria-hidden="true" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9" fill="currentColor"/></svg><svg aria-hidden="true" viewBox="0 0 24 24"><path d="m12 20-1.4-1.3C5.6 14.2 2.3 11.2 2.3 7.6A4.6 4.6 0 0 1 7 3c2 0 3.9 1.2 5 2.8A6 6 0 0 1 17 3a4.6 4.6 0 0 1 4.7 4.6c0 3.6-3.3 6.6-8.3 11.1L12 20Z" fill="currentColor"/></svg><svg aria-hidden="true" viewBox="0 0 24 24"><path d="m12 3 2.7 5.5 6.1.9-4.4 4.3 1 6.1-5.4-2.8-5.4 2.8 1-6.1-4.4-4.3 6.1-.9L12 3Z" fill="currentColor"/></svg><svg aria-hidden="true" viewBox="0 0 24 24"><path d="M4 10.5a12 12 0 0 1 16 0M7.5 14a7 7 0 0 1 9 0M11 17.5a2 2 0 0 1 2 0" fill="none" stroke="currentColor" stroke-linecap="round" stroke-width="2.4"/></svg></div></section>
+          </div></section>
+          <section class="tool-panel contrast-result-panel" aria-live="polite"><div class="tool-panel-heading"><span data-en="CONTRAST RESULT" data-ko="명암비 결과">명암비 결과</span></div><div class="contrast-result-content"><h2 data-en="Contrast ratio" data-ko="명암비">명암비</h2><div class="contrast-ratio" id="contrast-ratio">—</div><p class="contrast-summary" id="contrast-summary"></p>
+            <section class="contrast-category"><div><h3 data-en="Normal text" data-ko="일반 텍스트">일반 텍스트</h3><p data-en="Under 24px, or under 18.67px when bold" data-ko="24px 미만 또는 굵게 18.67px 미만">24px 미만 또는 굵게 18.67px 미만</p></div><div class="contrast-check-grid"><div class="contrast-check" data-contrast-check="normalAA"><span class="contrast-check-icon" aria-hidden="true"><svg class="icon-pass" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="m8 12 2.6 2.6L16.5 9"/></svg><svg class="icon-fail" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="m9 9 6 6m0-6-6 6"/></svg></span><strong>AA</strong><span>4.5:1</span><span data-contrast-status></span></div><div class="contrast-check" data-contrast-check="normalAAA"><span class="contrast-check-icon" aria-hidden="true"><svg class="icon-pass" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="m8 12 2.6 2.6L16.5 9"/></svg><svg class="icon-fail" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="m9 9 6 6m0-6-6 6"/></svg></span><strong>AAA</strong><span>7:1</span><span data-contrast-status></span></div></div></section>
+            <section class="contrast-category"><div><h3 data-en="Large text" data-ko="대형 텍스트">대형 텍스트</h3><p data-en="24px or larger, or 18.67px or larger when bold" data-ko="24px 이상 또는 굵게 18.67px 이상">24px 이상 또는 굵게 18.67px 이상</p></div><div class="contrast-check-grid"><div class="contrast-check" data-contrast-check="largeAA"><span class="contrast-check-icon" aria-hidden="true"><svg class="icon-pass" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="m8 12 2.6 2.6L16.5 9"/></svg><svg class="icon-fail" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="m9 9 6 6m0-6-6 6"/></svg></span><strong>AA</strong><span>3:1</span><span data-contrast-status></span></div><div class="contrast-check" data-contrast-check="largeAAA"><span class="contrast-check-icon" aria-hidden="true"><svg class="icon-pass" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="m8 12 2.6 2.6L16.5 9"/></svg><svg class="icon-fail" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="m9 9 6 6m0-6-6 6"/></svg></span><strong>AAA</strong><span>4.5:1</span><span data-contrast-status></span></div></div></section>
+            <section class="contrast-category"><div><h3 data-en="SVG and graphic icons" data-ko="그 외 텍스트 (SVG, 그래픽 아이콘 등)">그 외 텍스트 (SVG, 그래픽 아이콘 등)</h3><p data-en="Icons, UI components, and other graphical objects" data-ko="아이콘, UI 컴포넌트 및 그래픽 요소">아이콘, UI 컴포넌트 및 그래픽 요소</p></div><div class="contrast-check-grid"><div class="contrast-check" data-contrast-check="nonTextAA"><span class="contrast-check-icon" aria-hidden="true"><svg class="icon-pass" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="m8 12 2.6 2.6L16.5 9"/></svg><svg class="icon-fail" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="m9 9 6 6m0-6-6 6"/></svg></span><strong>AA</strong><span>3:1</span><span data-contrast-status></span></div><div class="contrast-check" data-contrast-check="nonTextAAA"><span class="contrast-check-icon" aria-hidden="true"><svg class="icon-pass" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="m8 12 2.6 2.6L16.5 9"/></svg><svg class="icon-fail" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="m9 9 6 6m0-6-6 6"/></svg></span><strong>AAA</strong><span>4.5:1</span><span data-contrast-status></span></div></div></section>
+          </div></section>
         </div>
         <p class="tool-status" id="contrast-status" aria-live="polite"></p>
       </section>
