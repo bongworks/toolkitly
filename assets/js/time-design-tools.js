@@ -115,16 +115,16 @@ export function contrastRatio(foreground, background) {
 }
 
 export function contrastRating(ratio) {
-  return { normalAA: ratio >= 4.5, largeAA: ratio >= 3, normalAAA: ratio >= 7, largeAAA: ratio >= 4.5 };
+  return { normalAA: ratio >= 4.5, largeAA: ratio >= 3, normalAAA: ratio >= 7, largeAAA: ratio >= 4.5, nonTextAA: ratio >= 3, nonTextAAA: ratio >= 4.5 };
 }
 
 export function formatContrastResult(ratio, language = 'en') {
   const rating = contrastRating(ratio);
   if (language === 'ko') {
     const pass = (value) => value ? '통과' : '실패';
-    return `${ratio}:1\n일반 텍스트 AA ${pass(rating.normalAA)} · 큰 텍스트 AA ${pass(rating.largeAA)}\n일반 텍스트 AAA ${pass(rating.normalAAA)} · 큰 텍스트 AAA ${pass(rating.largeAAA)}`;
+    return `${ratio}:1\n일반 텍스트 AA ${pass(rating.normalAA)} · 대형 텍스트 AA ${pass(rating.largeAA)}\n일반 텍스트 AAA ${pass(rating.normalAAA)} · 대형 텍스트 AAA ${pass(rating.largeAAA)}\nSVG·그래픽 아이콘 AA ${pass(rating.nonTextAA)} · SVG·그래픽 아이콘 AAA ${pass(rating.nonTextAAA)}`;
   }
-  return `${ratio}:1\nNormal AA ${rating.normalAA ? 'Pass' : 'Fail'} · Large AA ${rating.largeAA ? 'Pass' : 'Fail'}\nNormal AAA ${rating.normalAAA ? 'Pass' : 'Fail'} · Large AAA ${rating.largeAAA ? 'Pass' : 'Fail'}`;
+  return `${ratio}:1\nNormal AA ${rating.normalAA ? 'Pass' : 'Fail'} · Large AA ${rating.largeAA ? 'Pass' : 'Fail'}\nNormal AAA ${rating.normalAAA ? 'Pass' : 'Fail'} · Large AAA ${rating.largeAAA ? 'Pass' : 'Fail'}\nSVG and graphic icon AA ${rating.nonTextAA ? 'Pass' : 'Fail'} · SVG and graphic icon AAA ${rating.nonTextAAA ? 'Pass' : 'Fail'}`;
 }
 
 // The browser owns screen access; this only returns the color after an explicit user selection.
@@ -156,10 +156,23 @@ function setupTimezone() {
 }
 
 function setupContrast() {
-  const foreground = document.querySelector('#contrast-foreground'); const background = document.querySelector('#contrast-background'); const output = document.querySelector('#contrast-output'); const preview = document.querySelector('#contrast-preview'); const status = document.querySelector('#contrast-status');
+  const foreground = document.querySelector('#contrast-foreground'); const background = document.querySelector('#contrast-background'); const ratioOutput = document.querySelector('#contrast-ratio'); const summary = document.querySelector('#contrast-summary'); const preview = document.querySelector('#contrast-preview'); const status = document.querySelector('#contrast-status');
   const copy = (en, ko) => document.documentElement.lang === 'ko' ? ko : en;
   const paintPreview = () => { preview.style.color = foreground.value; preview.style.backgroundColor = background.value; };
-  const render = () => { try { output.textContent = formatContrastResult(contrastRatio(foreground.value, background.value), document.documentElement.lang); status.textContent = copy('Done. Your result is ready.', '완료했습니다. 결과를 확인하세요.'); status.dataset.status = 'success'; } catch (error) { output.textContent = ''; status.textContent = error.message; status.dataset.status = 'error'; } };
+  const setCheck = (name, passed) => {
+    const check = document.querySelector(`[data-contrast-check="${name}"]`);
+    if (!check) return;
+    check.dataset.status = passed ? 'pass' : 'fail';
+    check.querySelector('[data-contrast-status]').textContent = passed ? copy('Pass', '통과') : copy('Fail', '실패');
+  };
+  const render = () => { try {
+    const ratio = contrastRatio(foreground.value, background.value); const rating = contrastRating(ratio);
+    ratioOutput.textContent = `${ratio}:1`;
+    summary.textContent = rating.normalAA && rating.nonTextAA ? copy('WCAG AA baseline passed', 'WCAG AA 기본 기준 통과') : copy('WCAG AA baseline not met', 'WCAG AA 기본 기준 미달');
+    summary.dataset.status = rating.normalAA && rating.nonTextAA ? 'pass' : 'fail';
+    Object.entries(rating).forEach(([name, passed]) => setCheck(name, passed));
+    status.textContent = copy('Done. Your result is ready.', '완료했습니다. 결과를 확인하세요.'); status.dataset.status = 'success';
+  } catch (error) { ratioOutput.textContent = '—'; summary.textContent = ''; status.textContent = error.message; status.dataset.status = 'error'; } };
   const pick = async (input) => {
     try {
       input.value = await pickScreenColor();
@@ -173,7 +186,7 @@ function setupContrast() {
       status.dataset.status = cancelled ? 'idle' : 'error';
     }
   };
-  foreground.addEventListener('input', paintPreview); background.addEventListener('input', paintPreview);
+  foreground.addEventListener('input', () => { paintPreview(); render(); }); background.addEventListener('input', () => { paintPreview(); render(); });
   document.querySelector('[data-action="check-contrast"]')?.addEventListener('click', render);
   document.querySelector('[data-action="pick-foreground"]')?.addEventListener('click', () => pick(foreground));
   document.querySelector('[data-action="pick-background"]')?.addEventListener('click', () => pick(background));

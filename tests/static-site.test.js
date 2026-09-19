@@ -22,7 +22,7 @@ async function publicHtmlPages(rootDir, relativeDir = '') {
 }
 
 test('static SEO and privacy files exist and describe browser-local processing', async () => {
-  const files = ['robots.txt', 'sitemap.xml', 'privacy.html'];
+  const files = ['robots.txt', 'sitemap.xml', 'privacy.html', 'favicon.svg'];
   await Promise.all(files.map((file) => access(file)));
 
   const privacyPage = await readFile('privacy.html', 'utf8');
@@ -85,6 +85,7 @@ test('production build transforms every public page without placeholder origins 
     const outputPath = join(outputDir, pagePath);
     const page = await readFile(outputPath, 'utf8');
     assert.match(page, /<link rel="canonical" href="https:\/\/tools\.bongworks\.co\.kr(?:\/[^"?#]*)?" \/>/, `${pagePath} canonical origin`);
+    assert.match(page, /<link rel="icon" href="(?:\.\.\/)?favicon\.svg" type="image\/svg\+xml" \/>/, `${pagePath} favicon link`);
 
     const integrationReferences = [...page.matchAll(/<script\s+type="module"\s+src="([^"]*site-integrations\.js)"><\/script>/g)];
     assert.equal(integrationReferences.length, 1, `${pagePath} has one shared integration module`);

@@ -49,14 +49,15 @@ test('contrast ratio of black and white is 21', () => {
 });
 
 test('contrast rating follows WCAG AA and AAA boundaries', () => {
-  assert.deepEqual(contrastRating(7), { normalAA: true, largeAA: true, normalAAA: true, largeAAA: true });
-  assert.deepEqual(contrastRating(4.5), { normalAA: true, largeAA: true, normalAAA: false, largeAAA: true });
-  assert.deepEqual(contrastRating(3), { normalAA: false, largeAA: true, normalAAA: false, largeAAA: false });
+  assert.deepEqual(contrastRating(7), { normalAA: true, largeAA: true, normalAAA: true, largeAAA: true, nonTextAA: true, nonTextAAA: true });
+  assert.deepEqual(contrastRating(4.5), { normalAA: true, largeAA: true, normalAAA: false, largeAAA: true, nonTextAA: true, nonTextAAA: true });
+  assert.deepEqual(contrastRating(3), { normalAA: false, largeAA: true, normalAAA: false, largeAAA: false, nonTextAA: true, nonTextAAA: false });
 });
 
 test('contrast results use the active page language', () => {
   assert.match(formatContrastResult(4.5, 'en'), /Normal AA Pass/);
   assert.match(formatContrastResult(4.5, 'ko'), /일반 텍스트 AA 통과/);
+  assert.match(formatContrastResult(4.5, 'ko'), /SVG·그래픽 아이콘 AAA 통과/);
 });
 
 test('screen color picker returns the selected screen color', async () => {
