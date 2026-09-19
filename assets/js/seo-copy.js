@@ -70,10 +70,10 @@ export const SEO_COPY = {
     lead: { en: 'Create a QR code from text or a URL, then download it as PNG or SVG.', ko: '텍스트나 URL로 QR 코드를 만들고 PNG 또는 SVG로 다운로드하세요.' }
   },
   'tools/contrast-checker.html': {
-    title: { en: 'WCAG Color Contrast Checker | Toolkitly', ko: 'WCAG 색상 대비 검사기 — 명암비 확인 | Toolkitly' },
-    description: { en: 'Check foreground and background color contrast against WCAG AA and AAA accessibility thresholds.', ko: '전경색과 배경색의 명암비가 WCAG AA·AAA 접근성 기준을 충족하는지 확인하는 색상 대비 검사기입니다.' },
-    heading: { en: 'WCAG Color Contrast Checker', ko: 'WCAG 색상 대비 검사기 — 명암비 확인' },
-    lead: { en: 'Check foreground and background color contrast against WCAG AA and AAA.', ko: '전경색과 배경색의 WCAG AA·AAA 접근성 명암비를 검사합니다.' }
+    title: { en: 'WCAG Color Contrast Checker — Ratio & Accessibility | Toolkitly', ko: '색상 대비 검사기 — WCAG 명암비·접근성 대비 | Toolkitly' },
+    description: { en: 'Adjust background and text colors or lightness, then check WCAG AA and AAA color contrast ratios in your browser.', ko: '배경색·텍스트 색상과 명도를 조절해 WCAG AA·AAA 접근성 대비와 명암비를 확인하는 무료 색상 대비 검사기입니다.' },
+    heading: { en: 'WCAG Color Contrast Checker — Ratio & Accessibility', ko: '색상 대비 검사기 — WCAG 접근성 명암비 확인' },
+    lead: { en: 'Adjust background and text colors or lightness, then check WCAG AA and AAA contrast ratios in real time.', ko: '배경색과 텍스트 색상, 명도를 바꾸며 WCAG AA·AAA 접근성 대비와 명암비를 실시간으로 확인하세요.' }
   },
   'tools/color-converter.html': {
     title: { en: 'HEX, RGB & HSL Color Converter | Toolkitly', ko: 'HEX·RGB·HSL 색상 코드 변환기 | Toolkitly' },
@@ -124,7 +124,7 @@ export const TOOL_SEARCH_COPY = {
   'timestamp-converter': { ...SEO_COPY['tools/timestamp-converter.html'], keywords: { en: ['epoch converter', 'unix time', 'timestamp to date'], ko: ['유닉스 시간', 'epoch 변환', 'timestamp 날짜 변환'] } },
   'timezone-planner': { ...SEO_COPY['tools/timezone-planner.html'], keywords: { en: ['world clock', 'meeting time', 'time zone converter'], ko: ['세계 시간', '회의 시간', '시간대 변환'] } },
   'qr-generator': { ...SEO_COPY['tools/qr-generator.html'], keywords: { en: ['make qr code', 'qr maker'], ko: ['qr 만들기', 'qr코드', 'qr 다운로드'] } },
-  'contrast-checker': { ...SEO_COPY['tools/contrast-checker.html'], keywords: { en: ['wcag contrast', 'color accessibility'], ko: ['접근성 대비', 'wcag', '명암비'] } },
+  'contrast-checker': { ...SEO_COPY['tools/contrast-checker.html'], keywords: { en: ['wcag contrast', 'color accessibility', 'contrast ratio', 'color contrast checker'], ko: ['색상 대비 검사기', '접근성 대비', '접근성 명암비', 'wcag', '명암비', '색상 명도'] } },
   'color-converter': { ...SEO_COPY['tools/color-converter.html'], keywords: { en: ['color code', 'hex to rgb', 'rgb to hsl'], ko: ['색상 코드', 'hex rgb 변환', 'hsl'] } },
   'jwt-inspector': { ...SEO_COPY['tools/jwt-inspector.html'], keywords: { en: ['jwt decode', 'jwt verify', 'token decoder'], ko: ['jwt 디코딩', 'jwt 검증', '토큰 디코더'] } },
   'regex-tester': { ...SEO_COPY['tools/regex-tester.html'], keywords: { en: ['regular expression', 'regex test'], ko: ['정규표현식', '정규식 테스트'] } },

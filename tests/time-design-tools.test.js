@@ -10,7 +10,9 @@ import {
   contrastRating,
   formatContrastResult,
   pickScreenColor,
-  convertColor
+  convertColor,
+  colorLightness,
+  setColorLightness
 } from '../assets/js/time-design-tools.js';
 
 test('timestampToDate handles seconds and milliseconds', () => {
@@ -78,4 +80,9 @@ test('convertColor supports HEX, RGB and HSL', () => {
   assert.deepEqual(convertColor('#ff0000'), { hex: '#ff0000', rgb: 'rgb(255, 0, 0)', hsl: 'hsl(0, 100%, 50%)' });
   assert.deepEqual(convertColor('rgb(0, 128, 255)').hex, '#0080ff');
   assert.deepEqual(convertColor('hsl(120, 100%, 50%)').rgb, 'rgb(0, 255, 0)');
+});
+
+test('color lightness reports a percentage and preserves hue when adjusted', () => {
+  assert.equal(colorLightness('#ff0000'), 50);
+  assert.equal(setColorLightness('#ff0000', 25), '#800000');
 });

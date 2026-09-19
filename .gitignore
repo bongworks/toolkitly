@@ -2,3 +2,4 @@
 .superpowers/
 .env
 dist/
+.gstack/

@@ -95,6 +95,27 @@ function rgbToHsl([r, g, b]) {
   return [0, 0, Math.round(l * 100)];
 }
 
+function hslToRgb(h, s, l) {
+  const hue = ((h % 360) + 360) % 360 / 360;
+  const saturation = clamp(s, 0, 100) / 100;
+  const lightness = clamp(l, 0, 100) / 100;
+  const channel = (n) => {
+    const k = (n + hue * 12) % 12;
+    return lightness - saturation * Math.min(lightness, 1 - lightness) * Math.max(-1, Math.min(k - 3, 9 - k, 1));
+  };
+  return [channel(0), channel(8), channel(4)].map((value) => Math.round(value * 255));
+}
+
+export function colorLightness(input) {
+  return rgbToHsl(parseColor(input))[2];
+}
+
+export function setColorLightness(input, lightness) {
+  const [hue, saturation] = rgbToHsl(parseColor(input));
+  const rgb = hslToRgb(hue, saturation, Number(lightness));
+  return `#${rgb.map((value) => value.toString(16).padStart(2, '0')).join('')}`;
+}
+
 export function convertColor(input) {
   const rgb = parseColor(input).map((value) => Math.round(value));
   const hex = `#${rgb.map((value) => value.toString(16).padStart(2, '0')).join('')}`;
@@ -157,8 +178,29 @@ function setupTimezone() {
 
 function setupContrast() {
   const foreground = document.querySelector('#contrast-foreground'); const background = document.querySelector('#contrast-background'); const ratioOutput = document.querySelector('#contrast-ratio'); const summary = document.querySelector('#contrast-summary'); const preview = document.querySelector('#contrast-preview'); const status = document.querySelector('#contrast-status');
+  const foregroundSwatch = document.querySelector('#contrast-foreground-swatch'); const backgroundSwatch = document.querySelector('#contrast-background-swatch');
+  const foregroundLightness = document.querySelector('#contrast-foreground-lightness'); const backgroundLightness = document.querySelector('#contrast-background-lightness');
+  const foregroundLightnessValue = document.querySelector('#contrast-foreground-lightness-value'); const backgroundLightnessValue = document.querySelector('#contrast-background-lightness-value');
   const copy = (en, ko) => document.documentElement.lang === 'ko' ? ko : en;
   const paintPreview = () => { preview.style.color = foreground.value; preview.style.backgroundColor = background.value; };
+  const syncColorControl = (input, swatch, lightness, output) => {
+    const normalized = convertColor(input.value).hex;
+    input.value = normalized;
+    swatch.value = normalized;
+    lightness.value = colorLightness(normalized);
+    output.textContent = `${lightness.value}%`;
+  };
+  const updateFromText = (input, swatch, lightness, output) => {
+    try { syncColorControl(input, swatch, lightness, output); } catch { /* Render reports incomplete or invalid color input. */ }
+    paintPreview(); render();
+  };
+  const updateFromLightness = (input, swatch, lightness, output) => {
+    try {
+      input.value = setColorLightness(input.value, lightness.value);
+      syncColorControl(input, swatch, lightness, output);
+      paintPreview(); render();
+    } catch (error) { status.textContent = error.message; status.dataset.status = 'error'; }
+  };
   const setCheck = (name, passed) => {
     const check = document.querySelector(`[data-contrast-check="${name}"]`);
     if (!check) return;
@@ -176,8 +218,11 @@ function setupContrast() {
   const pick = async (input) => {
     try {
       input.value = await pickScreenColor();
-      paintPreview();
-      render();
+      const control = input === foreground
+        ? [foregroundSwatch, foregroundLightness, foregroundLightnessValue]
+        : [backgroundSwatch, backgroundLightness, backgroundLightnessValue];
+      syncColorControl(input, ...control);
+      paintPreview(); render();
       status.textContent = copy('Screen color applied and contrast result updated.', '화면 색상을 적용하고 대비 결과를 갱신했습니다.');
       status.dataset.status = 'success';
     } catch (error) {
@@ -186,11 +231,18 @@ function setupContrast() {
       status.dataset.status = cancelled ? 'idle' : 'error';
     }
   };
-  foreground.addEventListener('input', () => { paintPreview(); render(); }); background.addEventListener('input', () => { paintPreview(); render(); });
+  foreground.addEventListener('input', () => updateFromText(foreground, foregroundSwatch, foregroundLightness, foregroundLightnessValue));
+  background.addEventListener('input', () => updateFromText(background, backgroundSwatch, backgroundLightness, backgroundLightnessValue));
+  foregroundSwatch.addEventListener('input', () => { foreground.value = foregroundSwatch.value; updateFromText(foreground, foregroundSwatch, foregroundLightness, foregroundLightnessValue); });
+  backgroundSwatch.addEventListener('input', () => { background.value = backgroundSwatch.value; updateFromText(background, backgroundSwatch, backgroundLightness, backgroundLightnessValue); });
+  foregroundLightness.addEventListener('input', () => updateFromLightness(foreground, foregroundSwatch, foregroundLightness, foregroundLightnessValue));
+  backgroundLightness.addEventListener('input', () => updateFromLightness(background, backgroundSwatch, backgroundLightness, backgroundLightnessValue));
   document.querySelector('[data-action="check-contrast"]')?.addEventListener('click', render);
   document.querySelector('[data-action="pick-foreground"]')?.addEventListener('click', () => pick(foreground));
   document.querySelector('[data-action="pick-background"]')?.addEventListener('click', () => pick(background));
   document.querySelector('[data-page-language]')?.addEventListener('click', () => setTimeout(render, 0));
+  syncColorControl(foreground, foregroundSwatch, foregroundLightness, foregroundLightnessValue);
+  syncColorControl(background, backgroundSwatch, backgroundLightness, backgroundLightnessValue);
   paintPreview(); render();
 }
 
