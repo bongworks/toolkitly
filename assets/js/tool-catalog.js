@@ -12,7 +12,7 @@ export function matchesToolSearch(tool, query, language, category = '') {
   return searchable.includes(query.trim().toLocaleLowerCase(locale));
 }
 
-export const TOOLS = [
+const BASE_TOOLS = [
   {
     id: 'utm-builder', href: 'tools/utm-builder.html', category: 'link', icon: '↗',
     name: { en: 'UTM Builder', ko: 'UTM 링크 생성기' },
@@ -100,3 +100,14 @@ export const TOOLS = [
     description: { en: 'Generate, validate, copy, and download browser-local identifiers.', ko: '브라우저 안에서 식별자를 생성·검증·복사·다운로드합니다.' }, available: true
   }
 ];
+
+export const TOOLS = BASE_TOOLS.map((tool) => {
+  const copy = TOOL_SEARCH_COPY[tool.id];
+  return copy ? {
+    ...tool,
+    name: copy.heading,
+    description: copy.lead,
+    keywords: copy.keywords,
+  } : tool;
+});
+import { TOOL_SEARCH_COPY } from './seo-copy.js';

@@ -1,6 +1,9 @@
 import { cp, mkdir, readFile, readdir, rm, stat, writeFile } from 'node:fs/promises';
 import { dirname, isAbsolute, join, relative, resolve } from 'node:path';
 
+import { SEO_COPY } from '../assets/js/seo-copy.js';
+import { CATEGORIES, TOOLS } from '../assets/js/tool-catalog.js';
+
 const DEFAULT_ORIGIN = 'https://tools.bongworks.co.kr';
 const GA4_MEASUREMENT_ID = /^G-[A-Z0-9]+$/;
 const ADSENSE_CLIENT_ID = /^ca-pub-\d+$/;
@@ -86,7 +89,7 @@ function pageUrl(origin, pagePath) {
   return new URL(pagePath === 'index.html' ? '/' : pagePath, `${origin}/`).href;
 }
 
-function metadataFor({ title, description, url, pagePath }) {
+function metadataFor({ title, description, url, pagePath, locale, alternateUrls }) {
   const shared = [
     `<link rel="canonical" href="${escapeAttribute(url)}" />`,
     `<meta property="og:title" content="${escapeAttribute(title)}" />`,
@@ -96,6 +99,9 @@ function metadataFor({ title, description, url, pagePath }) {
     '<meta name="twitter:card" content="summary" />',
     `<meta name="twitter:title" content="${escapeAttribute(title)}" />`,
     `<meta name="twitter:description" content="${escapeAttribute(description)}" />`,
+    `<link rel="alternate" hreflang="en" href="${escapeAttribute(alternateUrls.en)}" />`,
+    `<link rel="alternate" hreflang="ko" href="${escapeAttribute(alternateUrls.ko)}" />`,
+    `<link rel="alternate" hreflang="x-default" href="${escapeAttribute(alternateUrls.en)}" />`,
   ];
   let schema = null;
   if (pagePath === 'index.html') {
@@ -117,13 +123,71 @@ function metadataFor({ title, description, url, pagePath }) {
   return shared.join('\n    ');
 }
 
-function transformHtml(source, { origin, pagePath }) {
-  const title = decodeHtmlEntities(source.match(/<title>([\s\S]*?)<\/title>/i)?.[1].trim() ?? 'Toolkitly');
-  const description = decodeHtmlEntities(source.match(/<meta\s+name=["']description["']\s+content=["']([^"']*)["']\s*\/?\s*>/i)?.[1] ?? '');
-  const url = pageUrl(origin, pagePath);
-  const metadata = metadataFor({ title, description, url, pagePath });
-  const integrationPath = relative(dirname(pagePath), 'assets/js/site-integrations.js').replace(/\\/g, '/');
-  return source
+function localizedPagePath(pagePath, locale) {
+  return locale === 'ko' ? join('ko', pagePath) : pagePath;
+}
+
+function copyForPage(pagePath, locale, source) {
+  const sourceTitle = decodeHtmlEntities(source.match(/<title>([\s\S]*?)<\/title>/i)?.[1].trim() ?? 'Toolkitly');
+  const sourceDescription = decodeHtmlEntities(source.match(/<meta\s+name=["']description["']\s+content=["']([^"']*)["']\s*\/?\s*>/i)?.[1] ?? '');
+  const copy = SEO_COPY[pagePath];
+  return {
+    copy,
+    title: copy?.title?.[locale] ?? sourceTitle,
+    description: copy?.description?.[locale] ?? sourceDescription,
+  };
+}
+
+function renderStaticToolCards(locale) {
+  return TOOLS.map((tool) => {
+    const category = CATEGORIES.find((item) => item.id === tool.category);
+    const name = tool.name[locale];
+    const description = tool.description[locale];
+    return `<a class="tool-card" href="${escapeAttribute(tool.href)}"><span class="tool-icon" aria-hidden="true">${escapeAttribute(tool.icon)}</span><h2>${escapeAttribute(name)}</h2><p>${escapeAttribute(description)}</p><span class="tool-card-meta">${escapeAttribute(category.label[locale])}</span></a>`;
+  }).join('');
+}
+
+function replaceStaticCoreCopy(source, { pagePath, locale, copy }) {
+  let result = source;
+  if (pagePath === 'index.html' && copy) {
+    result = result
+      .replace(/(<h1 id="directory-title"[^>]*>)[\s\S]*?(<\/h1>)/i, `$1${escapeAttribute(copy.heading[locale])}$2`)
+      .replace(/(<p data-i18n="subtitle">)[\s\S]*?(<\/p>)/i, `$1${escapeAttribute(copy.lead[locale])}$2`)
+      .replace(/(<div id="tool-grid"[^>]*>)[\s\S]*?(<\/div>)/i, `$1${renderStaticToolCards(locale)}$2`);
+  }
+  if (pagePath.startsWith('tools/') && copy) {
+    result = result
+      .replace(/(<section class="tool-heading"[\s\S]*?<h1\b[^>]*>)[\s\S]*?(<\/h1>)/i, `$1${escapeAttribute(copy.heading[locale])}$2`)
+      .replace(/(<\/h1>\s*<p\b[^>]*>)[\s\S]*?(<\/p>)/i, `$1${escapeAttribute(copy.lead[locale])}$2`);
+  }
+  return result;
+}
+
+function rebaseAssets(source, { pagePath, outputPagePath }) {
+  const sourceAssetPath = relative(dirname(pagePath), 'assets').replace(/\\/g, '/');
+  const outputAssetPath = relative(dirname(outputPagePath), 'assets').replace(/\\/g, '/');
+  return source.replaceAll(`${sourceAssetPath}/`, `${outputAssetPath}/`);
+}
+
+function sitemapContents(origin, pagePaths) {
+  const urls = pagePaths.map((pagePath) => `  <url><loc>${escapeAttribute(pageUrl(origin, pagePath))}</loc></url>`).join('\n');
+  return `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${urls}\n</urlset>\n`;
+}
+
+function transformHtml(source, { origin, pagePath, outputPagePath, locale }) {
+  const { copy, title, description } = copyForPage(pagePath, locale, source);
+  const url = pageUrl(origin, outputPagePath);
+  const alternateUrls = {
+    en: pageUrl(origin, localizedPagePath(pagePath, 'en')),
+    ko: pageUrl(origin, localizedPagePath(pagePath, 'ko')),
+  };
+  const metadata = metadataFor({ title, description, url, pagePath: outputPagePath, locale, alternateUrls });
+  const integrationPath = relative(dirname(outputPagePath), 'assets/js/site-integrations.js').replace(/\\/g, '/');
+  const localizedSource = rebaseAssets(replaceStaticCoreCopy(source, { pagePath, locale, copy }), { pagePath, outputPagePath })
+    .replace(/<html lang="en"/i, `<html lang="${locale}"`)
+    .replace(/<title>[\s\S]*?<\/title>/i, `<title>${escapeAttribute(title)}</title>`)
+    .replace(/<meta\s+name=["']description["']\s+content=["'][^"']*["']\s*\/?\s*>/i, `<meta name="description" content="${escapeAttribute(description)}" />`);
+  return localizedSource
     .replace(/<\/head>/i, `    ${metadata}\n  </head>`)
     .replace(/<\/body>/i, `    <script type="module" src="${integrationPath}"></script>\n  </body>`);
 }
@@ -199,18 +263,24 @@ export async function buildSite({ rootDir = process.cwd(), outputDir = join(root
   await copyIfPresent(resolvedRoot, resolvedOutput, 'robots.txt');
   await copyIfPresent(resolvedRoot, resolvedOutput, 'sitemap.xml');
 
+  const locales = pages.every((pagePath) => SEO_COPY[pagePath]) ? ['en', 'ko'] : ['en'];
+  const generatedPages = [];
   for (const pagePath of pages) {
     const source = await readFile(join(resolvedRoot, pagePath), 'utf8');
-    const destination = join(resolvedOutput, pagePath);
-    await mkdir(dirname(destination), { recursive: true });
-    await writeFile(destination, transformHtml(source, { origin, pagePath }));
+    for (const locale of locales) {
+      const outputPagePath = localizedPagePath(pagePath, locale);
+      const destination = join(resolvedOutput, outputPagePath);
+      await mkdir(dirname(destination), { recursive: true });
+      await writeFile(destination, transformHtml(source, { origin, pagePath, outputPagePath, locale }));
+      generatedPages.push(outputPagePath);
+    }
   }
 
   const configPath = join(resolvedOutput, 'assets/js/runtime-config.js');
   await mkdir(dirname(configPath), { recursive: true });
   await writeFile(configPath, `window.__TOOLKITLY_CONFIG__ = ${JSON.stringify(publicConfig(resolvedEnv))};\n`);
 
-  for (const path of ['robots.txt', 'sitemap.xml']) {
+  for (const path of ['robots.txt']) {
     try {
       const destination = join(resolvedOutput, path);
       const contents = await readFile(destination, 'utf8');
@@ -220,7 +290,9 @@ export async function buildSite({ rootDir = process.cwd(), outputDir = join(root
     }
   }
 
-  return pages;
+  await writeFile(join(resolvedOutput, 'sitemap.xml'), sitemapContents(origin, generatedPages.sort()));
+
+  return generatedPages.sort();
 }
 
 if (import.meta.url === new URL(process.argv[1], 'file:').href) {
