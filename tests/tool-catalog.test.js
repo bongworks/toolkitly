@@ -2,7 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { access } from 'node:fs/promises';
 
-import { TOOLS } from '../assets/js/tool-catalog.js';
+import { matchesToolSearch, TOOLS } from '../assets/js/tool-catalog.js';
 
 test('every catalog tool has a unique id, local route, and English/Korean copy', () => {
   const ids = TOOLS.map((tool) => tool.id);
@@ -34,6 +34,12 @@ test('catalog includes the implemented JSON formatter at its public route', () =
     },
     available: true
   });
+});
+
+test('accessibility contrast search finds the contrast checker', () => {
+  const contrastChecker = TOOLS.find((tool) => tool.id === 'contrast-checker');
+
+  assert.equal(matchesToolSearch(contrastChecker, '접근성 대비', 'ko'), true);
 });
 
 test('every catalog record is available and has a static tool page', async () => {

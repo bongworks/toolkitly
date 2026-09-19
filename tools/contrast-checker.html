@@ -1,1 +1,52 @@
-<!doctype html><html lang="en" data-theme="dark"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="description" content="Check WCAG color contrast ratios in your browser."><title>Contrast Checker | Toolkitly</title><link rel="stylesheet" href="../assets/css/tokens.css"><link rel="stylesheet" href="../assets/css/components.css"><link rel="stylesheet" href="../assets/css/tool-page.css"><link rel="stylesheet" href="../assets/css/time-design-tools.css"></head><body><header class="site-header"><nav class="site-nav"><a class="brand" href="../index.html"><span class="brand-mark">&lt;/&gt;</span><span>Toolkitly</span></a><p class="tool-breadcrumb"><a href="../index.html">Tools</a><span>/</span><span data-en="Contrast Checker" data-ko="색상 대비 검사기">Contrast Checker</span></p><div class="nav-actions"><button class="icon-button" data-page-language type="button">EN</button><button class="icon-button" data-page-theme type="button">◐</button></div></nav></header><main class="page-shell tool-page" data-tool-root><section class="tool-heading"><p class="eyebrow" data-en="DESIGN & ACCESSIBILITY" data-ko="디자인·접근성">DESIGN &amp; ACCESSIBILITY</p><h1 data-en="Contrast Checker" data-ko="색상 대비 검사기">Contrast Checker</h1><p data-en="Test foreground and background colors against WCAG AA and AAA." data-ko="전경색과 배경색의 WCAG AA·AAA 대비를 검사합니다.">Test foreground and background colors against WCAG AA and AAA.</p></section><section class="tool-workbench"><div class="time-tool-form"><div class="color-row"><label for="contrast-foreground"><span data-en="Foreground" data-ko="전경색">Foreground</span><input id="contrast-foreground" value="#ffffff"></label><label for="contrast-background"><span data-en="Background" data-ko="배경색">Background</span><input id="contrast-background" value="#111827"></label></div><button class="button button-primary" data-action="check-contrast" type="button" data-en="Check contrast" data-ko="대비 검사">Check contrast</button></div><div class="tool-split"><div class="tool-panel"><div class="tool-panel-heading"><span data-en="PREVIEW" data-ko="미리보기">PREVIEW</span></div><div class="tool-result" id="contrast-preview">Aa Accessible text</div></div><div class="tool-panel"><div class="tool-panel-heading"><span data-en="WCAG RESULT" data-ko="WCAG 결과">WCAG RESULT</span></div><pre class="tool-result" id="contrast-output" aria-live="polite"></pre></div></div><p class="tool-status" id="contrast-status" aria-live="polite"></p></section></main><footer class="site-footer"><span>Toolkitly</span><span>·</span><a href="../privacy.html">Privacy</a></footer><script type="module" src="../assets/js/time-design-tools.js"></script><script>const f=document.querySelector('#contrast-foreground'),b=document.querySelector('#contrast-background'),p=document.querySelector('#contrast-preview');const paint=()=>{p.style.color=f.value;p.style.backgroundColor=b.value};f.addEventListener('input',paint);b.addEventListener('input',paint);paint();</script></body></html>
+<!doctype html>
+<html lang="ko" data-theme="dark">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <meta name="description" content="색상 대비 검사기로 전경·배경색의 WCAG 접근성 대비를 확인하세요. 화면 스포이드로 색상을 선택할 수 있습니다.">
+    <title>색상 대비 검사기 | 접근성 대비(WCAG) | Toolkitly</title>
+    <link rel="stylesheet" href="../assets/css/tokens.css">
+    <link rel="stylesheet" href="../assets/css/components.css">
+    <link rel="stylesheet" href="../assets/css/tool-page.css">
+    <link rel="stylesheet" href="../assets/css/time-design-tools.css">
+  </head>
+  <body>
+    <header class="site-header">
+      <nav class="site-nav">
+        <a class="brand" href="../index.html"><span class="brand-mark">&lt;/&gt;</span><span>Toolkitly</span></a>
+        <p class="tool-breadcrumb"><a href="../index.html">Tools</a><span>/</span><span data-en="Contrast Checker" data-ko="색상 대비 검사기">색상 대비 검사기</span></p>
+        <div class="nav-actions"><button class="icon-button" data-page-language type="button">EN</button><button class="icon-button" data-page-theme type="button">◐</button></div>
+      </nav>
+    </header>
+    <main class="page-shell tool-page" data-tool-root>
+      <section class="tool-heading">
+        <p class="eyebrow" data-en="DESIGN & ACCESSIBILITY" data-ko="디자인·접근성">디자인·접근성</p>
+        <h1 data-en="Contrast Checker" data-ko="색상 대비 검사기">색상 대비 검사기</h1>
+        <p data-en="Test foreground and background colors against WCAG AA and AAA." data-ko="전경색과 배경색의 WCAG 접근성 대비(AA·AAA)를 검사합니다.">전경색과 배경색의 WCAG 접근성 대비(AA·AAA)를 검사합니다.</p>
+      </section>
+      <section class="tool-workbench">
+        <div class="time-tool-form">
+          <div class="color-row">
+            <div class="color-input-group">
+              <label for="contrast-foreground"><span data-en="Foreground" data-ko="전경색">전경색</span><input id="contrast-foreground" value="#ffffff"></label>
+              <button class="button button-quiet" data-action="pick-foreground" type="button" data-en="Pick from screen" data-ko="화면에서 선택">화면에서 선택</button>
+            </div>
+            <div class="color-input-group">
+              <label for="contrast-background"><span data-en="Background" data-ko="배경색">배경색</span><input id="contrast-background" value="#111827"></label>
+              <button class="button button-quiet" data-action="pick-background" type="button" data-en="Pick from screen" data-ko="화면에서 선택">화면에서 선택</button>
+            </div>
+          </div>
+          <p class="tool-note"><span data-en="On supported Chromium desktop browsers, you can select a color anywhere on your screen, including another app or monitor." data-ko="지원되는 Chromium 데스크톱 브라우저에서는 다른 앱이나 외부 모니터를 포함한 화면 어디에서나 색상을 선택할 수 있습니다.">지원되는 Chromium 데스크톱 브라우저에서는 다른 앱이나 외부 모니터를 포함한 화면 어디에서나 색상을 선택할 수 있습니다.</span></p>
+          <button class="button button-primary" data-action="check-contrast" type="button" data-en="Check contrast" data-ko="대비 검사">대비 검사</button>
+        </div>
+        <div class="tool-split">
+          <div class="tool-panel"><div class="tool-panel-heading"><span data-en="PREVIEW" data-ko="미리보기">미리보기</span></div><div class="tool-result" id="contrast-preview">Aa Accessible text</div></div>
+          <div class="tool-panel"><div class="tool-panel-heading"><span data-en="WCAG RESULT" data-ko="WCAG 결과">WCAG 결과</span></div><pre class="tool-result" id="contrast-output" aria-live="polite"></pre></div>
+        </div>
+        <p class="tool-status" id="contrast-status" aria-live="polite"></p>
+      </section>
+    </main>
+    <footer class="site-footer"><span>Toolkitly</span><span>·</span><a href="../privacy.html">Privacy</a></footer>
+    <script type="module" src="../assets/js/time-design-tools.js"></script>
+  </body>
+</html>

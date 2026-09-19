@@ -6,6 +6,12 @@ export const CATEGORIES = [
   { id: 'design', label: { en: 'Design', ko: '디자인' } }
 ];
 
+export function matchesToolSearch(tool, query, language, category = '') {
+  const locale = language === 'ko' ? 'ko' : 'en';
+  const searchable = [tool.name[locale], tool.description[locale], ...(tool.keywords?.[locale] ?? []), category].join(' ').toLocaleLowerCase(locale);
+  return searchable.includes(query.trim().toLocaleLowerCase(locale));
+}
+
 export const TOOLS = [
   {
     id: 'utm-builder', href: 'tools/utm-builder.html', category: 'link', icon: '↗',
@@ -60,7 +66,8 @@ export const TOOLS = [
   {
     id: 'contrast-checker', href: 'tools/contrast-checker.html', category: 'design', icon: '◐',
     name: { en: 'Contrast Checker', ko: '색상 대비 검사기' },
-    description: { en: 'Check WCAG contrast for foreground and background colors.', ko: '전경·배경색의 WCAG 대비를 확인합니다.' }, available: true
+    description: { en: 'Check WCAG contrast for foreground and background colors.', ko: '전경·배경색의 WCAG 접근성 대비를 확인합니다.' },
+    keywords: { en: ['accessibility contrast'], ko: ['접근성 대비'] }, available: true
   },
   {
     id: 'color-converter', href: 'tools/color-converter.html', category: 'design', icon: '◈',
