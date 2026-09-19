@@ -65,6 +65,28 @@ test('JSON formatter language control routes to the matching static locale', asy
   assert.match(formatter, /window\.location\.assign\(localePathFor\(window\.location\.pathname, nextLanguage\)\)/);
 });
 
+test('contrast checker groups each color with its picker and lightness control', async () => {
+  const page = await readFile('tools/contrast-checker.html', 'utf8');
+  const backgroundStart = page.indexOf('class="contrast-color-group contrast-background-group"');
+  const backgroundLightness = page.indexOf('id="contrast-background-lightness"');
+  const foregroundStart = page.indexOf('class="contrast-color-group contrast-foreground-group"');
+  const foregroundLightness = page.indexOf('id="contrast-foreground-lightness"');
+
+  assert.ok(backgroundStart >= 0);
+  assert.ok(backgroundStart < backgroundLightness);
+  assert.ok(backgroundLightness < foregroundStart);
+  assert.ok(foregroundStart < foregroundLightness);
+  assert.doesNotMatch(page, /eyedropper-button/);
+  const resultPanel = page.slice(page.indexOf('class="contrast-result-panel"'));
+  assert.doesNotMatch(resultPanel, /24px 미만|24px 이상|18\.67px/);
+  assert.match(page, /접근성 명암비[\s\S]*접근성 대비/);
+  assert.match(page, /대형 텍스트 미리보기/);
+  assert.match(page, /<circle[^>]+fill="currentColor"/);
+  assert.match(page, /<path[^>]+d="M12 4 20 20H4Z"/);
+  assert.match(page, /<rect[^>]+fill="currentColor"/);
+  assert.doesNotMatch(page, /contrast-preview-button/);
+});
+
 test('production build transforms every public page without placeholder origins or remote source scripts', async (t) => {
   const rootDir = process.cwd();
   const tempDir = await mkdtemp(join(tmpdir(), 'toolkitly-static-site-'));
@@ -129,4 +151,33 @@ test('production build transforms every public page without placeholder origins 
   assert.match(koreanFormatter, /rel="canonical" href="https:\/\/tools\.bongworks\.co\.kr\/ko\/tools\/json-formatter\.html"/);
   assert.match(englishFormatter, /hreflang="ko" href="https:\/\/tools\.bongworks\.co\.kr\/ko\/tools\/json-formatter\.html"/);
   assert.match(koreanFormatter, /JSON 포맷터·검증기 — JSON 정리·압축/);
+});
+
+test('localized tool pages expose localized WebPage and WebApplication schema', async (t) => {
+  const tempDir = await mkdtemp(join(tmpdir(), 'toolkitly-localized-schema-'));
+  const outputDir = join(tempDir, 'dist');
+  t.after(() => rm(tempDir, { recursive: true, force: true }));
+
+  await buildSite({
+    rootDir: process.cwd(),
+    outputDir,
+    env: { PUBLIC_SITE_URL: 'https://tools.bongworks.co.kr' },
+  });
+
+  const page = await readFile(join(outputDir, 'ko/tools/contrast-checker.html'), 'utf8');
+  const englishPage = await readFile(join(outputDir, 'tools/contrast-checker.html'), 'utf8');
+  const schemaMatch = page.match(/<script type="application\/ld\+json">([\s\S]*?)<\/script>/);
+
+  assert.match(englishPage, /<html lang="en"/);
+  assert.match(englishPage, /data-en="Background color" data-ko="배경색">Background color<\/span>/);
+  assert.match(englishPage, /How to use the color contrast checker and WCAG criteria/);
+  assert.match(page, /data-en="Background color" data-ko="배경색">배경색<\/span>/);
+  assert.match(page, /색상 대비 검사기 사용 방법과 WCAG 기준/);
+  assert.match(page, /href="color-converter\.html"/);
+  assert.match(page, /<title>색상 대비 검사기 — WCAG 명암비·접근성 대비 \| Toolkitly<\/title>/);
+  assert.match(page, /배경색·텍스트 색상과 명도를 조절해 WCAG AA·AAA 접근성 대비와 명암비를 확인/);
+  assert.ok(schemaMatch, 'Korean tool page has JSON-LD');
+  const graph = JSON.parse(schemaMatch[1])['@graph'];
+  assert.ok(graph.some((item) => item['@type'] === 'WebPage' && item.inLanguage === 'ko'));
+  assert.ok(graph.some((item) => item['@type'] === 'WebApplication' && item.inLanguage === 'ko'));
 });

@@ -91,6 +91,10 @@ function pageUrl(origin, pagePath) {
 
 function metadataFor({ title, description, url, pagePath, locale, alternateUrls }) {
   const faviconPath = relative(dirname(pagePath), 'favicon.svg').replace(/\\/g, '/');
+  const sourcePagePath = pagePath.replace(/^ko\//, '');
+  const siteUrl = new URL('/', url).href;
+  const websiteId = `${siteUrl}#website`;
+  const webPageId = `${url}#webpage`;
   const shared = [
     `<link rel="icon" href="${faviconPath}" type="image/svg+xml" />`,
     `<link rel="canonical" href="${escapeAttribute(url)}" />`,
@@ -106,15 +110,45 @@ function metadataFor({ title, description, url, pagePath, locale, alternateUrls 
     `<link rel="alternate" hreflang="x-default" href="${escapeAttribute(alternateUrls.en)}" />`,
   ];
   let schema = null;
-  if (pagePath === 'index.html') {
-    schema = { '@context': 'https://schema.org', '@type': 'WebSite', name: 'Toolkitly', url };
-  } else if (pagePath.startsWith('tools/')) {
-    const name = title.replace(/\s*\|\s*Toolkitly\s*$/i, '');
+  if (sourcePagePath === 'index.html') {
     schema = {
       '@context': 'https://schema.org',
       '@graph': [
-        { '@type': 'WebApplication', name, description, url, applicationCategory: 'UtilitiesApplication', operatingSystem: 'Any' },
-        { '@type': 'BreadcrumbList', itemListElement: [
+        { '@id': websiteId, '@type': 'WebSite', name: 'Toolkitly', url: siteUrl, inLanguage: ['en', 'ko'] },
+        { '@id': webPageId, '@type': 'WebPage', url, name: title, description, inLanguage: locale, isPartOf: { '@id': websiteId } },
+      ],
+    };
+  } else if (sourcePagePath.startsWith('tools/')) {
+    const name = title.replace(/\s*\|\s*Toolkitly\s*$/i, '');
+    const applicationId = `${url}#webapplication`;
+    const breadcrumbId = `${url}#breadcrumb`;
+    schema = {
+      '@context': 'https://schema.org',
+      '@graph': [
+        {
+          '@id': webPageId,
+          '@type': 'WebPage',
+          url,
+          name,
+          description,
+          inLanguage: locale,
+          isPartOf: { '@id': websiteId },
+          mainEntity: { '@id': applicationId },
+          breadcrumb: { '@id': breadcrumbId },
+        },
+        {
+          '@id': applicationId,
+          '@type': 'WebApplication',
+          name,
+          description,
+          url,
+          inLanguage: locale,
+          applicationCategory: 'UtilitiesApplication',
+          operatingSystem: 'Any',
+          browserRequirements: 'Requires a modern web browser with JavaScript enabled.',
+          isAccessibleForFree: true,
+        },
+        { '@id': breadcrumbId, '@type': 'BreadcrumbList', itemListElement: [
           { '@type': 'ListItem', position: 1, name: 'Toolkitly', item: new URL('/', url).href },
           { '@type': 'ListItem', position: 2, name, item: url },
         ] },
@@ -165,6 +199,10 @@ function replaceStaticCoreCopy(source, { pagePath, locale, copy }) {
   return result;
 }
 
+function localizeInlineCopy(source, locale) {
+  return source.replace(/(<([a-z][\w:-]*)\b[^>]*\bdata-en="([^"]*)"[^>]*\bdata-ko="([^"]*)"[^>]*>)([^<]*)(<\/\2>)/gi, (_match, openingTag, _tagName, english, korean, _contents, closingTag) => `${openingTag}${locale === 'ko' ? korean : english}${closingTag}`);
+}
+
 function rebaseAssets(source, { pagePath, outputPagePath }) {
   const sourceAssetPath = relative(dirname(pagePath), 'assets').replace(/\\/g, '/');
   const outputAssetPath = relative(dirname(outputPagePath), 'assets').replace(/\\/g, '/');
@@ -185,8 +223,8 @@ function transformHtml(source, { origin, pagePath, outputPagePath, locale }) {
   };
   const metadata = metadataFor({ title, description, url, pagePath: outputPagePath, locale, alternateUrls });
   const integrationPath = relative(dirname(outputPagePath), 'assets/js/site-integrations.js').replace(/\\/g, '/');
-  const localizedSource = rebaseAssets(replaceStaticCoreCopy(source, { pagePath, locale, copy }), { pagePath, outputPagePath })
-    .replace(/<html lang="en"/i, `<html lang="${locale}"`)
+  const localizedSource = rebaseAssets(replaceStaticCoreCopy(localizeInlineCopy(source, locale), { pagePath, locale, copy }), { pagePath, outputPagePath })
+    .replace(/<html\b([^>]*)>/i, (_match, attributes) => `<html lang="${locale}"${attributes.replace(/\s+lang=["'][^"']*["']/i, '')}>`)
     .replace(/<title>[\s\S]*?<\/title>/i, `<title>${escapeAttribute(title)}</title>`)
     .replace(/<meta\s+name=["']description["']\s+content=["'][^"']*["']\s*\/?\s*>/i, `<meta name="description" content="${escapeAttribute(description)}" />`);
   return localizedSource
