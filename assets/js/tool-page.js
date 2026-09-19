@@ -1,4 +1,5 @@
 import { getCopy, getStoredLanguage, setLanguage, translateStaticContent } from './i18n.js';
+import { getSeoCopy, localePathFor } from './seo-copy.js';
 import { initializeTheme, toggleTheme } from './theme.js';
 
 export function formatLocalizedStatus(language, type) {
@@ -18,11 +19,24 @@ export function initializeToolPage() {
   if (typeof document === 'undefined') return;
   const languageButton = document.querySelector('[data-page-language]');
   const themeButton = document.querySelector('[data-page-theme]');
-  let language = setLanguage(getStoredLanguage());
+  let language = setLanguage(document.documentElement.lang === 'ko' ? 'ko' : getStoredLanguage());
   initializeTheme();
+
+  function applySearchIntentCopy() {
+    const copy = getSeoCopy(window.location.pathname);
+    if (!copy) return;
+    document.title = copy.title[language];
+    const description = document.querySelector('meta[name="description"]');
+    if (description) description.content = copy.description[language];
+    const heading = document.querySelector('.tool-heading h1');
+    const lead = document.querySelector('.tool-heading h1 + p');
+    if (heading) heading.textContent = copy.heading[language];
+    if (lead) lead.textContent = copy.lead[language];
+  }
 
   function render() {
     translateStaticContent(language);
+    applySearchIntentCopy();
     if (languageButton) {
       languageButton.textContent = language.toUpperCase();
       languageButton.setAttribute('aria-label', getCopy(language, 'languageLabel'));
@@ -34,8 +48,9 @@ export function initializeToolPage() {
   }
 
   languageButton?.addEventListener('click', () => {
-    language = setLanguage(language === 'en' ? 'ko' : 'en');
-    render();
+    const nextLanguage = language === 'en' ? 'ko' : 'en';
+    setLanguage(nextLanguage);
+    window.location.assign(localePathFor(window.location.pathname, nextLanguage));
   });
   themeButton?.addEventListener('click', () => {
     toggleTheme();

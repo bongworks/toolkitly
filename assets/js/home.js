@@ -1,5 +1,6 @@
 import { CATEGORIES, matchesToolSearch, TOOLS } from './tool-catalog.js';
 import { getCopy, getStoredLanguage, setLanguage, translateStaticContent } from './i18n.js';
+import { getSeoCopy, localePathFor } from './seo-copy.js';
 import { initializeTheme, toggleTheme } from './theme.js';
 
 const searchInput = document.querySelector('#tool-search');
@@ -10,8 +11,18 @@ const emptyState = document.querySelector('#empty-state');
 const languageButton = document.querySelector('.language-button');
 const themeButton = document.querySelector('.theme-button');
 
-let language = setLanguage(getStoredLanguage());
+let language = setLanguage(document.documentElement.lang === 'ko' ? 'ko' : getStoredLanguage());
 let activeCategory = 'all';
+
+function applySearchIntentCopy() {
+  const copy = getSeoCopy(window.location.pathname);
+  if (!copy) return;
+  document.title = copy.title[language];
+  const description = document.querySelector('meta[name="description"]');
+  if (description) description.content = copy.description[language];
+  document.querySelector('#directory-title').textContent = copy.heading[language];
+  document.querySelector('.section-heading > p[data-i18n="subtitle"]').textContent = copy.lead[language];
+}
 
 function labelFor(category) {
   return category.label[language];
@@ -79,6 +90,7 @@ function updateControls() {
 
 function render() {
   translateStaticContent(language);
+  applySearchIntentCopy();
   renderFilters();
   renderTools();
   updateControls();
@@ -89,8 +101,9 @@ render();
 
 searchInput.addEventListener('input', renderTools);
 languageButton.addEventListener('click', () => {
-  language = setLanguage(language === 'en' ? 'ko' : 'en');
-  render();
+  const nextLanguage = language === 'en' ? 'ko' : 'en';
+  setLanguage(nextLanguage);
+  window.location.assign(localePathFor(window.location.pathname, nextLanguage));
 });
 themeButton.addEventListener('click', () => {
   toggleTheme();

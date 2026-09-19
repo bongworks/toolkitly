@@ -58,6 +58,13 @@ test('P1 pages are represented in the sitemap and use only local scripts', async
   for (const page of pages) assert.doesNotMatch(page, /<script[^>]+src=["']https?:\/\//i);
 });
 
+test('JSON formatter language control routes to the matching static locale', async () => {
+  const formatter = await readFile('tools/json-formatter.html', 'utf8');
+
+  assert.match(formatter, /import \{ localePathFor \} from '\.\.\/assets\/js\/seo-copy\.js';/);
+  assert.match(formatter, /window\.location\.assign\(localePathFor\(window\.location\.pathname, nextLanguage\)\)/);
+});
+
 test('production build transforms every public page without placeholder origins or remote source scripts', async (t) => {
   const rootDir = process.cwd();
   const tempDir = await mkdtemp(join(tmpdir(), 'toolkitly-static-site-'));
@@ -76,7 +83,8 @@ test('production build transforms every public page without placeholder origins 
     },
   });
 
-  assert.deepEqual(generatedPages, sourcePages);
+  const localizedPages = sourcePages.map((pagePath) => join('ko', pagePath));
+  assert.deepEqual(generatedPages, [...sourcePages, ...localizedPages].sort());
 
   const generatedHtml = await Promise.all(sourcePages.map(async (pagePath) => {
     const source = await readFile(join(rootDir, pagePath), 'utf8');
@@ -109,4 +117,14 @@ test('production build transforms every public page without placeholder origins 
     assert.doesNotMatch(page, /property="og:url" content="https:\/\/example\.com/i);
     assert.doesNotMatch(page, /"url":"https:\/\/example\.com/i);
   }
+
+  const englishHome = await readFile(join(outputDir, 'index.html'), 'utf8');
+  const koreanHome = await readFile(join(outputDir, 'ko/index.html'), 'utf8');
+  const englishFormatter = await readFile(join(outputDir, 'tools/json-formatter.html'), 'utf8');
+  const koreanFormatter = await readFile(join(outputDir, 'ko/tools/json-formatter.html'), 'utf8');
+  assert.match(englishHome, /href="tools\/json-formatter\.html"/);
+  assert.match(koreanHome, /<html lang="ko"/);
+  assert.match(koreanFormatter, /rel="canonical" href="https:\/\/tools\.bongworks\.co\.kr\/ko\/tools\/json-formatter\.html"/);
+  assert.match(englishFormatter, /hreflang="ko" href="https:\/\/tools\.bongworks\.co\.kr\/ko\/tools\/json-formatter\.html"/);
+  assert.match(koreanFormatter, /JSON 포맷터·검증기 — JSON 정리·압축/);
 });

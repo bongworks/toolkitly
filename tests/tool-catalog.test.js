@@ -27,10 +27,14 @@ test('catalog includes the implemented JSON formatter at its public route', () =
     href: 'tools/json-formatter.html',
     category: 'data',
     icon: '{}',
-    name: { en: 'JSON Formatter', ko: 'JSON 포매터' },
+    name: { en: 'JSON Formatter & Validator — Pretty JSON & Minify', ko: 'JSON 포맷터·검증기 — JSON 정리·압축' },
     description: {
-      en: 'Format, validate, and minify JSON locally.',
-      ko: 'JSON을 브라우저에서 포맷·검증·압축합니다.'
+      en: 'Pretty print, validate, or minify JSON locally. Your input never leaves your browser.',
+      ko: 'JSON을 보기 좋게 정리하고 문법을 검증하거나 압축합니다. 입력값은 브라우저에서만 처리합니다.'
+    },
+    keywords: {
+      en: ['prettyjson', 'json pretty print', 'json validator', 'json minify'],
+      ko: ['json 정리', 'json 검증', 'json 압축']
     },
     available: true
   });
@@ -40,6 +44,13 @@ test('accessibility contrast search finds the contrast checker', () => {
   const contrastChecker = TOOLS.find((tool) => tool.id === 'contrast-checker');
 
   assert.equal(matchesToolSearch(contrastChecker, '접근성 대비', 'ko'), true);
+});
+
+test('catalog matches high-intent Korean and English utility synonyms', () => {
+  assert.equal(matchesToolSearch(TOOLS.find((tool) => tool.id === 'json-formatter'), 'json 정리', 'ko'), true);
+  assert.equal(matchesToolSearch(TOOLS.find((tool) => tool.id === 'json-formatter'), 'prettyjson', 'en'), true);
+  assert.equal(matchesToolSearch(TOOLS.find((tool) => tool.id === 'timestamp-converter'), 'epoch converter', 'en'), true);
+  assert.equal(matchesToolSearch(TOOLS.find((tool) => tool.id === 'hash-generator'), 'sha256', 'en'), true);
 });
 
 test('every catalog record is available and has a static tool page', async () => {

@@ -67,11 +67,12 @@
     <footer class="site-footer"><span>Toolkitly</span><span class="footer-separator" aria-hidden="true">·</span><a href="../privacy.html">Privacy</a></footer>
     <script type="module">
       import { getStoredLanguage, setLanguage, translateStaticContent } from '../assets/js/i18n.js';
+      import { localePathFor } from '../assets/js/seo-copy.js';
       import { initializeTheme, toggleTheme } from '../assets/js/theme.js';
 
       const languageButton = document.querySelector('#page-language');
       const themeButton = document.querySelector('#page-theme');
-      let language = setLanguage(getStoredLanguage());
+      let language = setLanguage(document.documentElement.lang === 'ko' ? 'ko' : getStoredLanguage());
       initializeTheme();
       function renderLanguage() {
         translateStaticContent(language);
@@ -79,8 +80,9 @@
       }
       renderLanguage();
       languageButton.addEventListener('click', () => {
-        language = setLanguage(language === 'en' ? 'ko' : 'en');
-        renderLanguage();
+        const nextLanguage = language === 'en' ? 'ko' : 'en';
+        setLanguage(nextLanguage);
+        window.location.assign(localePathFor(window.location.pathname, nextLanguage));
       });
       themeButton.addEventListener('click', () => toggleTheme());
     </script>
