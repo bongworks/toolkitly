@@ -102,6 +102,7 @@ test('production build transforms every public page without placeholder origins 
   }));
 
   const runtimeConfig = await readFile(join(outputDir, 'assets/js/runtime-config.js'), 'utf8');
+  await access(join(outputDir, 'favicon.svg'));
   const configMatch = runtimeConfig.match(/^window\.__TOOLKITLY_CONFIG__ = (\{.*\});\n$/);
   assert.ok(configMatch, 'generated runtime configuration uses the public config assignment');
   assert.deepEqual(Object.keys(JSON.parse(configMatch[1])).sort(), [
