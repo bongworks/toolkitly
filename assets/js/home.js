@@ -1,4 +1,4 @@
-import { CATEGORIES, TOOLS } from './tool-catalog.js';
+import { CATEGORIES, matchesToolSearch, TOOLS } from './tool-catalog.js';
 import { getCopy, getStoredLanguage, setLanguage, translateStaticContent } from './i18n.js';
 import { initializeTheme, toggleTheme } from './theme.js';
 
@@ -21,8 +21,8 @@ function matchingTools() {
   const query = searchInput.value.trim().toLocaleLowerCase(language);
   return TOOLS.filter((tool) => {
     const inCategory = activeCategory === 'all' || tool.category === activeCategory;
-    const searchable = `${tool.name[language]} ${tool.description[language]} ${labelFor(CATEGORIES.find((category) => category.id === tool.category))}`.toLocaleLowerCase(language);
-    return inCategory && searchable.includes(query);
+    const category = labelFor(CATEGORIES.find((category) => category.id === tool.category));
+    return inCategory && matchesToolSearch(tool, query, language, category);
   });
 }
 

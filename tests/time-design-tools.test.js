@@ -8,6 +8,8 @@ import {
   formatTimezoneSummary,
   contrastRatio,
   contrastRating,
+  formatContrastResult,
+  pickScreenColor,
   convertColor
 } from '../assets/js/time-design-tools.js';
 
@@ -50,6 +52,25 @@ test('contrast rating follows WCAG AA and AAA boundaries', () => {
   assert.deepEqual(contrastRating(7), { normalAA: true, largeAA: true, normalAAA: true, largeAAA: true });
   assert.deepEqual(contrastRating(4.5), { normalAA: true, largeAA: true, normalAAA: false, largeAAA: true });
   assert.deepEqual(contrastRating(3), { normalAA: false, largeAA: true, normalAAA: false, largeAAA: false });
+});
+
+test('contrast results use the active page language', () => {
+  assert.match(formatContrastResult(4.5, 'en'), /Normal AA Pass/);
+  assert.match(formatContrastResult(4.5, 'ko'), /일반 텍스트 AA 통과/);
+});
+
+test('screen color picker returns the selected screen color', async () => {
+  class EyeDropper {
+    open() {
+      return Promise.resolve({ sRGBHex: '#123abc' });
+    }
+  }
+
+  assert.equal(await pickScreenColor(EyeDropper), '#123abc');
+});
+
+test('screen color picker reports unsupported browsers', async () => {
+  await assert.rejects(() => pickScreenColor(undefined), /not supported/i);
 });
 
 test('convertColor supports HEX, RGB and HSL', () => {

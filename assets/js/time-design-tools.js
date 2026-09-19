@@ -118,6 +118,23 @@ export function contrastRating(ratio) {
   return { normalAA: ratio >= 4.5, largeAA: ratio >= 3, normalAAA: ratio >= 7, largeAAA: ratio >= 4.5 };
 }
 
+export function formatContrastResult(ratio, language = 'en') {
+  const rating = contrastRating(ratio);
+  if (language === 'ko') {
+    const pass = (value) => value ? '통과' : '실패';
+    return `${ratio}:1\n일반 텍스트 AA ${pass(rating.normalAA)} · 큰 텍스트 AA ${pass(rating.largeAA)}\n일반 텍스트 AAA ${pass(rating.normalAAA)} · 큰 텍스트 AAA ${pass(rating.largeAAA)}`;
+  }
+  return `${ratio}:1\nNormal AA ${rating.normalAA ? 'Pass' : 'Fail'} · Large AA ${rating.largeAA ? 'Pass' : 'Fail'}\nNormal AAA ${rating.normalAAA ? 'Pass' : 'Fail'} · Large AAA ${rating.largeAAA ? 'Pass' : 'Fail'}`;
+}
+
+// The browser owns screen access; this only returns the color after an explicit user selection.
+export async function pickScreenColor(EyeDropperConstructor = globalThis.EyeDropper) {
+  if (typeof EyeDropperConstructor !== 'function') throw new Error('Screen color picking is not supported in this browser.');
+  const { sRGBHex } = await new EyeDropperConstructor().open();
+  if (!sRGBHex) throw new Error('No screen color was selected.');
+  return sRGBHex;
+}
+
 function localize(root) {
   const language = document.documentElement.lang === 'ko' ? 'ko' : 'en';
   root?.querySelectorAll('[data-en]').forEach((element) => { element.textContent = element.dataset[language] || element.dataset.en; });
@@ -139,9 +156,29 @@ function setupTimezone() {
 }
 
 function setupContrast() {
-  const foreground = document.querySelector('#contrast-foreground'); const background = document.querySelector('#contrast-background'); const output = document.querySelector('#contrast-output'); const status = document.querySelector('#contrast-status');
-  const render = () => { try { const ratio = contrastRatio(foreground.value, background.value); const rating = contrastRating(ratio); output.textContent = `${ratio}:1\nNormal AA ${rating.normalAA ? 'Pass' : 'Fail'} · Large AA ${rating.largeAA ? 'Pass' : 'Fail'}\nNormal AAA ${rating.normalAAA ? 'Pass' : 'Fail'} · Large AAA ${rating.largeAAA ? 'Pass' : 'Fail'}`; status.textContent = 'Done. Your result is ready.'; status.dataset.status = 'success'; } catch (error) { output.textContent = ''; status.textContent = error.message; status.dataset.status = 'error'; } };
-  document.querySelector('[data-action="check-contrast"]')?.addEventListener('click', render); render();
+  const foreground = document.querySelector('#contrast-foreground'); const background = document.querySelector('#contrast-background'); const output = document.querySelector('#contrast-output'); const preview = document.querySelector('#contrast-preview'); const status = document.querySelector('#contrast-status');
+  const copy = (en, ko) => document.documentElement.lang === 'ko' ? ko : en;
+  const paintPreview = () => { preview.style.color = foreground.value; preview.style.backgroundColor = background.value; };
+  const render = () => { try { output.textContent = formatContrastResult(contrastRatio(foreground.value, background.value), document.documentElement.lang); status.textContent = copy('Done. Your result is ready.', '완료했습니다. 결과를 확인하세요.'); status.dataset.status = 'success'; } catch (error) { output.textContent = ''; status.textContent = error.message; status.dataset.status = 'error'; } };
+  const pick = async (input) => {
+    try {
+      input.value = await pickScreenColor();
+      paintPreview();
+      render();
+      status.textContent = copy('Screen color applied and contrast result updated.', '화면 색상을 적용하고 대비 결과를 갱신했습니다.');
+      status.dataset.status = 'success';
+    } catch (error) {
+      const cancelled = error?.name === 'AbortError';
+      status.textContent = cancelled ? copy('Color selection cancelled.', '색상 선택을 취소했습니다.') : error.message;
+      status.dataset.status = cancelled ? 'idle' : 'error';
+    }
+  };
+  foreground.addEventListener('input', paintPreview); background.addEventListener('input', paintPreview);
+  document.querySelector('[data-action="check-contrast"]')?.addEventListener('click', render);
+  document.querySelector('[data-action="pick-foreground"]')?.addEventListener('click', () => pick(foreground));
+  document.querySelector('[data-action="pick-background"]')?.addEventListener('click', () => pick(background));
+  document.querySelector('[data-page-language]')?.addEventListener('click', () => setTimeout(render, 0));
+  paintPreview(); render();
 }
 
 function setupColor() {
