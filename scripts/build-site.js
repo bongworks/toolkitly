@@ -90,7 +90,9 @@ function pageUrl(origin, pagePath) {
 }
 
 function metadataFor({ title, description, url, pagePath, locale, alternateUrls }) {
+  const faviconPath = relative(dirname(pagePath), 'favicon.svg').replace(/\\/g, '/');
   const shared = [
+    `<link rel="icon" href="${faviconPath}" type="image/svg+xml" />`,
     `<link rel="canonical" href="${escapeAttribute(url)}" />`,
     `<meta property="og:title" content="${escapeAttribute(title)}" />`,
     `<meta property="og:description" content="${escapeAttribute(description)}" />`,
@@ -260,6 +262,7 @@ export async function buildSite({ rootDir = process.cwd(), outputDir = join(root
   await rm(resolvedOutput, { recursive: true, force: true });
   await mkdir(resolvedOutput, { recursive: true });
   await copyIfPresent(resolvedRoot, resolvedOutput, 'assets');
+  await copyIfPresent(resolvedRoot, resolvedOutput, 'favicon.svg');
   await copyIfPresent(resolvedRoot, resolvedOutput, 'robots.txt');
   await copyIfPresent(resolvedRoot, resolvedOutput, 'sitemap.xml');
 
@@ -280,7 +283,7 @@ export async function buildSite({ rootDir = process.cwd(), outputDir = join(root
   await mkdir(dirname(configPath), { recursive: true });
   await writeFile(configPath, `window.__TOOLKITLY_CONFIG__ = ${JSON.stringify(publicConfig(resolvedEnv))};\n`);
 
-  for (const path of ['robots.txt']) {
+  for (const path of ['favicon.svg', 'robots.txt', 'sitemap.xml']) {
     try {
       const destination = join(resolvedOutput, path);
       const contents = await readFile(destination, 'utf8');
